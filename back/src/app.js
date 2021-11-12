@@ -8,6 +8,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
 
-//app.use()
+var userRoots = require("../src/roots/user.root");
+
+app.use("/api", userRoots);
 
 module.exports = app;
