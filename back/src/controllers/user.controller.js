@@ -26,79 +26,80 @@ function register(req, res){
     var registerModel;
     var schema = {};
 
-    params.idUser?schema.idUser = params.idUser:null;
+    params.idPlace?schema.idUser = params.idUser:null;
     params.nameUser?schema.nameUser = params.nameUser:null;
     params.lastnameUser?schema.lastnameUser = params.lastnameUser:null;
     params.nickUser?schema.nickUser = params.nickUser:null;
     params.emailUser?schema.emailUser = params.emailUser:null;
     params.passwordUser?schema.passwordUser = bcrypt.hashSync(params.passwordUser):null;
 
-    //compare the idUser to assign it the corresponding role
-    params.idUser.length === 7?schema.rolUser = "estudiante":null;
-    params.idUser.length === 13?schema.rolUser = "bibliotecario":null;
+    params.rolUser?schema.rolUser = params.rolUser:null;
     
-    //it checks that it is ADMIN to be able to integrate a role
-    datatoken && datatoken.rolUser == "admin"?params.rolUser?schema.rolUser = params.rolUser:null:null;
     
-    if(
-        params.idUser &&
-        params.nameUser &&
-        params.lastnameUser &&
-        params.nickUser &&
-        params.emailUser &&
-        params.passwordUser &&
-        params.passwordUser.length >= 8 &&
-        params.idUser.length === 7 || params.idUser.length === 13
-    ){
-        userModel.findOne({
-            $or: [
-                {idUser: params.idUser},
-                {emailUser: params.emailUser},
-                {nickUser: params.nickUser}
-            ]
-        }).exec((err, userFound)=>{
-            if(err){
-                jsonResponse.message = "Error al comprobar el usuario";
-
-                res.status(jsonResponse.error).send(jsonResponse);
-                
-            }else{
-                if(userFound){
-                    jsonResponse.error = 403;
-                    jsonResponse.message = "Error de registro, el usuario ya existe";
-                    jsonResponse.data = userFound;
+    if(datatoken.rolUser == "admin"){
+        if(
+            params.idPlace &&
+            params.nameUser &&
+            params.lastnameUser &&
+            params.nickUser &&
+            params.emailUser &&
+            params.passwordUser &&
+            params.rolUser
+        ){
+            userModel.findOne({
+                $and: [
+                    {idPlace: params.idPlace},
+                    {nickUser: params.nickUser}
+                ]
+            }).exec((err, userFound)=>{
+                if(err){
+                    jsonResponse.message = "Error al comprobar el usuario";
 
                     res.status(jsonResponse.error).send(jsonResponse);
-                    
+
                 }else{
-                    registerModel = new userModel(schema);
+                    if(userFound){
+                        jsonResponse.error = 400;
+                        jsonResponse.message = "Error de registro, el usuario ya existe";
+                        jsonResponse.data = userFound;
 
-                    registerModel.save((err, userSaved)=>{
-                        if(err){
-                            jsonResponse.message = "Error al registrar usuario";
+                        res.status(jsonResponse.error).send(jsonResponse);
 
-                            res.status(jsonResponse.error).send(jsonResponse);
-                            
-                        }else{
-                            jsonResponse.message = "usuario registrado!!";
-                            jsonResponse.data = {userSaved};
+                    }else{
+                        registerModel = new userModel(schema);
 
-                            res.status(jsonResponse.error).send(jsonResponse);
-                            
-                            //login(req, res);
-                        }
-                    })
+                        registerModel.save((err, userSaved)=>{
+                            if(err){
+                                jsonResponse.message = "Error al registrar usuario";
+
+                                res.status(jsonResponse.error).send(jsonResponse);
+
+                            }else{
+                                jsonResponse.message = "usuario registrado!!";
+                                jsonResponse.data = {userSaved};
+
+                                res.status(jsonResponse.error).send(jsonResponse);
+
+                                //login(req, res);
+                            }
+                        })
+                    }
                 }
-            }
-        });
+            });
+            statusClean();
+        }else{
+            jsonResponse.error = 400;
+            jsonResponse.message = "rellene todos los campos obligatorios";
+            res.status(jsonResponse.error).send(jsonResponse);
+            statusClean();
+        }
         statusClean();
     }else{
-        jsonResponse.error = 400;
+        jsonResponse.error = 403;
         jsonResponse.message = "rellene todos los campos obligatorios";
         res.status(jsonResponse.error).send(jsonResponse);
         statusClean();
     }
-    statusClean();
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
@@ -154,7 +155,7 @@ function list(req, res){
     var order = 1;
     
     if(datatoken.rolUser == "admin"){
-        userModel.find({$or:[{rolUser: "estudiante"},{rolUser: "bibliotecario"}]}).sort({idUser: order}).exec((err, usersFound)=>{
+        userModel.find({$or:[{rolUser: "company"},{rolUser: "branch"}]}).sort({idPlace: order}).exec((err, usersFound)=>{
             if(err){
                 jsonResponse.message = "error al listar los usuarios";
             }else{
@@ -192,7 +193,7 @@ function search(req, res){
     
     if(datatoken.rolUser == "admin"){
         userModel.findOne({$and:[{idUser: idUser},
-            {$or:[{rolUser: "estudiante"},{rolUser: "bibliotecario"}]}]}).exec((err, userFound)=>{
+            {$or:[{rolUser: "company"},{rolUser: "branch"}]}]}).exec((err, userFound)=>{
             if(err){
                 jsonResponse.message = "error al buscar usuario";
             }else{
@@ -236,14 +237,8 @@ function edit(req, res){
     params.nickUser?schema.nickUser = params.nickUser:null;
     params.emailUser?schema.emailUser = params.emailUser:null;
     params.passwordUser?schema.passwordUser = bcrypt.hashSync(params.passwordUser):null;
-
-    //compare the idUser to assign it the corresponding role
-    params.idUser?params.idUser.length == 7?schema.rolUser = "estudiante":null:null;
-    params.idUser?params.idUser.length == 13?schema.rolUser = "bibliotecario":null:null;    
+    params.rolUser?schema.rolUser = params.rolUser:null; 
     
-
-    //it checks that it is ADMIN to be able to integrate a role
-    datatoken.rolUser == "admin"?params.rolUser?schema.rolUser = params.rolUser:null:null;
     console.log(schema)
     if(datatoken.rolUser == "admin"){
         userModel.findByIdAndUpdate(idUser,schema, {new: true, useFindAndModify: false}, (err, userUpdated)=>{
