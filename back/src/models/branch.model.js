@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 var branchSchema = Schema({
     
+    idBranch: String,
     nameBranch: String,
     addressBranch: String,
     idCompany: String,

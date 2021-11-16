@@ -2,6 +2,7 @@ const app = require("./app");
 const mongoose = require("mongoose");
 const userModel = require("./models/user.model");
 const companyModel = require("./models/company.model");
+const branchModel = require("./models/branch.model");
 const bcrypt = require("bcrypt-nodejs");
 
 mongoose.Promise = global.Promise;
@@ -29,6 +30,7 @@ function initApp(){
     defaultUser();
     defaultClient();
     defaultCompany();
+    defaultBranch();
     
 }
 
@@ -68,6 +70,7 @@ function initApp(){
             }else{
                 if(!user){
                     model = new userModel({
+                        idPlace: "2021001",
                         nameUser: "admin",
                         lastnameUser: "mcdonalds",
                         nickUser: "AdminMc",
@@ -93,6 +96,7 @@ function defaultClient(){
         }else{
             if(!user){
                 model = new userModel({
+                    idPlace: "21001",
                     nameUser: "client",
                     lastnameUser: "client",
                     nickUser: "client1",
@@ -117,11 +121,13 @@ function defaultCompany(){
         }else{
             if(!user){
                 model = new companyModel({
+                    idCompany: "2021001",
                     nameCompany: "McDonald's",
                     
                 });
                 model.save();
                 console.log("company default creado");
+                
             }else{
                 console.log("company default");
             }
@@ -129,3 +135,24 @@ function defaultCompany(){
     })
 }
 
+function defaultBranch(){
+    branchModel.findOne({$and:[{nameBranch: "plaza 4"},{idCompany: "2021001"}]}, (err, user)=>{
+        if(err){
+            console.log(err);
+        }else{
+            if(!user){
+                model = new branchModel({
+                    idCompany: "2021001",
+                    addressBranch: "zona 4",
+                    nameBranch: "plaza 4",
+                    
+                });
+                model.save();
+                console.log("branch default creado");
+                
+            }else{
+                console.log("branch default");
+            }
+        }
+    })
+}

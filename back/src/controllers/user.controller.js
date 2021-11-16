@@ -26,7 +26,7 @@ function register(req, res){
     var registerModel;
     var schema = {};
 
-    params.idPlace?schema.idUser = params.idUser:null;
+    params.idPlace?schema.idPlace = params.idPlace:null;
     params.nameUser?schema.nameUser = params.nameUser:null;
     params.lastnameUser?schema.lastnameUser = params.lastnameUser:null;
     params.nickUser?schema.nickUser = params.nickUser:null;
@@ -35,7 +35,7 @@ function register(req, res){
 
     params.rolUser?schema.rolUser = params.rolUser:null;
     
-    
+    console.log(schema)
     if(datatoken.rolUser == "admin"){
         if(
             params.idPlace &&
@@ -56,7 +56,7 @@ function register(req, res){
                     jsonResponse.message = "Error al comprobar el usuario";
 
                     res.status(jsonResponse.error).send(jsonResponse);
-
+                    statusClean();
                 }else{
                     if(userFound){
                         jsonResponse.error = 400;
@@ -64,7 +64,7 @@ function register(req, res){
                         jsonResponse.data = userFound;
 
                         res.status(jsonResponse.error).send(jsonResponse);
-
+                        statusClean();
                     }else{
                         registerModel = new userModel(schema);
 
@@ -73,13 +73,13 @@ function register(req, res){
                                 jsonResponse.message = "Error al registrar usuario";
 
                                 res.status(jsonResponse.error).send(jsonResponse);
-
+                                statusClean();
                             }else{
                                 jsonResponse.message = "usuario registrado!!";
                                 jsonResponse.data = {userSaved};
 
                                 res.status(jsonResponse.error).send(jsonResponse);
-
+                                statusClean();
                                 //login(req, res);
                             }
                         })
@@ -96,7 +96,7 @@ function register(req, res){
         statusClean();
     }else{
         jsonResponse.error = 403;
-        jsonResponse.message = "rellene todos los campos obligatorios";
+        jsonResponse.message = "no posees los permisos necesarios";
         res.status(jsonResponse.error).send(jsonResponse);
         statusClean();
     }
@@ -187,17 +187,18 @@ function search(req, res){
 
     statusClean();
     
-    var idUser = req.params.idUser
+    var _id = req.params._id
 
     var datatoken = req.user;
     
     if(datatoken.rolUser == "admin"){
-        userModel.findOne({$and:[{idUser: idUser},
+        userModel.findOne({$and:[{_id: _id},
             {$or:[{rolUser: "company"},{rolUser: "branch"}]}]}).exec((err, userFound)=>{
             if(err){
                 jsonResponse.message = "error al buscar usuario";
             }else{
-                if(userFound && userFound.length > 0){
+                console.log(userFound)
+                if(userFound ){
                     jsonResponse.error = 200;
                     jsonResponse.message = "Usuario obtenido";
                     jsonResponse.data = userFound;
@@ -226,12 +227,12 @@ function edit(req, res){
     statusClean();
 
     var params = req.body;
-    var idUser = req.params.idUser;
+    var idUser = req.params._id;
     var datatoken = req.user;
 
     var schema = {};
     
-    params.idUser?schema.idUser = params.idUser:null;
+    params.idPlace?schema.idPlace = params.idPlace:null;
     params.nameUser?schema.nameUser = params.nameUser:null;
     params.lastnameUser?schema.lastnameUser = params.lastnameUser:null;
     params.nickUser?schema.nickUser = params.nickUser:null;
@@ -277,7 +278,7 @@ function remove(req, res){
     
     statusClean();
     
-    var idUser = req.params.idUser;
+    var idUser = req.params._id;
     var datatoken = req.user;
     
     if(datatoken.rolUser == "admin"){
@@ -302,7 +303,47 @@ function remove(req, res){
         })
     }else{
         jsonResponse.error = 403;
-        jsonResponse.message = "No tienes permisos para editar";
+        jsonResponse.message = "No tienes permisos para eliminar";
+
+        res.status(jsonResponse.error).send(jsonResponse);
+        statusClean();
+    }
+}
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
+
+function removeAuto(req, res){
+    
+    statusClean();
+    
+    var params = req.body;
+    var idPlace = params.idPlace
+    var datatoken = req.user;
+    
+    if(datatoken.rolUser == "admin"){
+        userModel.findOneAndDelete({idPlace: idPlace}, (err, userDeleted)=>{
+            if(err){
+                jsonResponse.message = "error al eliminar usuario"
+
+                res.status(jsonResponse.error).send(jsonResponse);
+            }else{
+                if(userDeleted){
+                    jsonResponse.error = 200;
+                    jsonResponse.message = "Ususario eliminado!!"
+
+                }else{
+                    jsonResponse.error = 404;
+                    jsonResponse.message = "Usuario no existente";
+
+                    
+                }
+                res.status(jsonResponse.error).send(jsonResponse)
+            }
+        })
+    }else{
+        jsonResponse.error = 403;
+        jsonResponse.message = "No tienes permisos para eliminar";
 
         res.status(jsonResponse.error).send(jsonResponse);
         statusClean();
@@ -333,5 +374,6 @@ module.exports = {
     list,
     search,
     edit,
-    remove
+    remove,
+    removeAuto
 }

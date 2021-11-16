@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 var companySchema = Schema({
     
+    idCompany: String,
     nameCompany: String,
     sale: Number,
     
