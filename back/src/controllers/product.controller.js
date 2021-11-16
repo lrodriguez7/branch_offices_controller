@@ -640,6 +640,38 @@ function change(req,res){
 
 function deleter(req,res){
 
+    statusClean();
+    
+    var idProduct = req.params.idProduct;
+    var datatoken = req.user;
+    
+    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
+        productModel.findByIdAndDelete(idProduct, (err, productDelete)=>{
+            if(err){
+                jsonResponse.message = "error al eliminar producto"
+
+                res.status(jsonResponse.error).send(jsonResponse);
+            }else{
+                if(productDelete){
+                    jsonResponse.error = 200;
+                    jsonResponse.message = "producto eliminada!!"
+
+                }else{
+                    jsonResponse.error = 404;
+                    jsonResponse.message = "producto no existente";
+
+                    
+                }
+                res.status(jsonResponse.error).send(jsonResponse)
+            }
+        })
+    }else{
+        jsonResponse.error = 403;
+        jsonResponse.message = "No tienes permisos para eliminar";
+
+        res.status(jsonResponse.error).send(jsonResponse);
+        statusClean();
+    }
 
 }
 
