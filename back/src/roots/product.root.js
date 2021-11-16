@@ -13,6 +13,9 @@ api.delete("/product/delete/:idProduct",token.ensureAuth, controller.remove);
 //branch product
 api.post("/product/add", token.ensureAuth, controller.add);
 api.get("/product/tables", token.ensureAuth, controller.table);
-api.put("/product/change", token.ensureAuth, controller.change);
+api.put("/product/change/:idProduct", token.ensureAuth, controller.change);
+api.delete("/product/deleter/:idProduct", token.ensureAuth, controller.deleter);
+//branch sales
+
 
 module.exports = api;

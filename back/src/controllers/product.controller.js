@@ -1,4 +1,5 @@
 
+const { findOne } = require("../models/product.model");
 const productModel = require("../models/product.model");
 
 
@@ -155,37 +156,65 @@ function edit(req, res){
 
     var schema = {};
     
-    params.nameProduct?schema.nameProduct = params.nameProduct:null;
-    params.nameProvedor?schema.nameProvedor = params.nameProvedor:null;
     params.stock?schema.stock = params.stock:null;
-    params.sale?schema.sale = params.sale:null;
+
     
     
     
     console.log(schema)
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
-        productModel.findByIdAndUpdate(idProduct,schema, {new: true, useFindAndModify: false}, (err, productUpdate)=>{
-            if(err){
-                jsonResponse.message = "error al editar producto";
-                
-                res.status(jsonResponse.error).send(jsonResponse);
-            }else{
-                if(productUpdate){
-                    jsonResponse.error = 200;
-                    jsonResponse.message = "producto actualizado!!"
-                    jsonResponse.data = productUpdate;
-
+        if(params.stock){
+            productModel.findById(idProduct,(err,productFound)=>{
+                if(err){
+                    jsonResponse.message = "error al editar producto";
+                                
                     res.status(jsonResponse.error).send(jsonResponse);
                     statusClean();
                 }else{
-                    jsonResponse.error = 404;
-                    jsonResponse.message = "no se encontro el producto";
-
-                    res.status(jsonResponse.error).send(jsonResponse);
+                    if(productFound){
+                        productFound.stock = parseInt(productFound.stock);
+                        schema.stock = parseInt(schema.stock);
+                        productFound.stock = productFound.stock + schema.stock;
+                        if(productFound.stock>= 0){
+                            productModel.findByIdAndUpdate(idProduct,productFound, {new: true, useFindAndModify: false}, (err, productUpdate)=>{
+                                if(err){
+                                    jsonResponse.message = "error al editar producto";
+                                    
+                                    res.status(jsonResponse.error).send(jsonResponse);
+                                    statusClean();
+                                }else{
+                                    if(productUpdate){
+                                        jsonResponse.error = 200;
+                                        jsonResponse.message = "producto actualizado!!"
+                                        jsonResponse.data = productUpdate;
+                                        res.status(jsonResponse.error).send(jsonResponse);
+                                        statusClean();
+                                    }else{
+                                        jsonResponse.error = 404;
+                                        jsonResponse.message = "no se encontro el producto";
+                    
+                                        res.status(jsonResponse.error).send(jsonResponse);
+                                    }
+                                }
+                                statusClean();
+                            });
+                        }else{
+                            jsonResponse.error = 400;
+                            jsonResponse.message = "cantidad invalida con la bodega";
+                    
+                            res.status(jsonResponse.error).send(jsonResponse);
+                            statusClean();
+                        }  
+                    }
                 }
-            }
+            })
+        }else{
+            jsonResponse.error = 400;
+            jsonResponse.message = "llene los campos obligatorios";
+
+            res.status(jsonResponse.error).send(jsonResponse);
             statusClean();
-        });
+        }
     }else{
         jsonResponse.error = 403;
         jsonResponse.message = "No tienes permisos para editar";
@@ -271,6 +300,7 @@ function add(req,res){
             params.nameProduct &&
             params.nameProvedor &&
             params.stock &&
+            params.stock.length > 0 &&
             params.idDestiny
             ){
                 productModel.findOne({$and:[
@@ -286,7 +316,7 @@ function add(req,res){
                         statusClean();
                     }else{
                         if(productFound){
-                            if(productFound.stock > schema.stock){
+                            if(productFound.stock >=schema.stock){
                                 
                                 schema2.stock = productFound.stock - schema.stock
                                 productModel.findOneAndUpdate({$and:[
@@ -464,7 +494,7 @@ function table(req,res){
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
 
-function change(req,res){
+function changes(req,res){
     
     statusClean();
     var params = req.body;
@@ -508,7 +538,7 @@ function change(req,res){
                         statusClean();
                     }else{
                         if(productFounds){
-                            if(productFounds.stock > schema.stock){
+                            if(productFounds.stock >= schema.stock){
                                 productModel.findOne({$and:[
                                     {idCompany: schema.idCompany},
                                     {nameProduct: schema.nameProduct},
@@ -636,6 +666,156 @@ function change(req,res){
 
 }
 
+function change(req,res){
+    statusClean();
+    var params = req.body;
+    var datatoken = req.user;
+    var idProduct = req.params.idProduct
+    //all vars in use
+    
+    
+    var schema = {};
+    
+    params.stock?schema.stock = params.stock:null;
+
+    datatoken && datatoken.rolUser == "admin"?params.idCompany?schema.idCompany = params.idCompany:null:null;
+
+    
+    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idPlace:null;
+
+    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
+        if(params.stock){
+            productModel.findById(idProduct,(err,productFound)=>{
+                if(err){
+                    jsonResponse.message = "No se pudo registrar el producto"
+                                                                        
+                                                                    
+                    res.status(jsonResponse.error).send(jsonResponse);
+                    statusClean();
+                }else{
+                    if(productFound){
+                        productModel.findOne({$and:[
+                            {idCompany: productFound.idCompany},
+                            {nameProduct: productFound.nameProduct},
+                            {nameProvedor: productFound.nameProvedor},
+                            {idDestiny: productFound.idCompany},
+                        ]},(err,productFounds)=>{
+                            if(err){
+                                jsonResponse.message = "No se pudo registrar el producto"
+                                                                        
+                                                                    
+                                res.status(jsonResponse.error).send(jsonResponse);
+                                statusClean();
+                            }else{
+                                if(productFounds){
+                                    if(productFounds.stock >= schema.stock){
+                                        productFound.stock = parseInt(productFound.stock)
+                                        schema.stock = parseInt(schema.stock)
+                                        productFound.stock = productFound.stock + schema.stock
+                                        if(productFound.stock >= 0){
+                                            schema.stock = productFounds.stock - schema.stock
+                                            productModel.findByIdAndUpdate(productFounds._id,
+                                                schema,{new: true, useFindAndModify:false},
+                                                (err,productUpdate)=>{
+                                                    if(err){
+                                                        jsonResponse.message = "No se pudo registrar el producto"
+                                                                        
+                                                                    
+                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                        statusClean();
+                                                    }else{
+                                                        if(productUpdate){
+                                                            productModel.findByIdAndUpdate(idProduct,
+                                                                productFound,{new: true, useFindAndModify: false},
+                                                                (err,productUpdate)=>{
+                                                                    if(err){
+                                                                        
+                                                                        jsonResponse.message = "No se pudo registrar el producto"
+                                                                        
+                                                                    
+                                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                                        statusClean();
+
+                                                                    }else{
+                                                                        if(productUpdate){
+                                                                            jsonResponse.error = 200;
+                                                                            jsonResponse.message = "producto actualizado!!"
+                                                                            jsonResponse.data = productUpdate;
+                                                                        
+                                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                                            statusClean();
+                                                                        }else{
+                                                                            jsonResponse.error = 400;
+                                                                            jsonResponse.message = "No se pudo editar el producto"
+                                                                            
+                                                                        
+                                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                                            statusClean();
+                                                                        }
+                                                                    }
+                                                                })
+                                                        }else{
+                                                            jsonResponse.error = 404;
+                                                            jsonResponse.message = "No se pudo editar el producto"
+                                                            
+                                                        
+                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                            statusClean();
+                                                        }
+                                                    }
+                                                })
+                                        }else{
+                                            jsonResponse.error = 400;
+                                            jsonResponse.message = "error, cantidad de producto menor a la existente"
+                                            
+                                        
+                                            res.status(jsonResponse.error).send(jsonResponse);
+                                            statusClean();
+                                        }
+                                                
+                                    }else{
+                                        jsonResponse.error = 400;
+                                        jsonResponse.message = "error, cantidad de producto menor a la existente en bodega"
+                                        
+                                    
+                                        res.status(jsonResponse.error).send(jsonResponse);
+                                        statusClean();
+
+                                    }
+                                }else{
+                                    jsonResponse.error = 404;
+                                    jsonResponse.message = "No se encontro el producto"
+                                    
+                                    res.status(jsonResponse.error).send(jsonResponse);
+                                    statusClean();
+                                }
+                            }
+                        })
+                    }else{
+                        jsonResponse.error = 404;
+                        jsonResponse.message = "No se encontro el producto"
+                        
+                        res.status(jsonResponse.error).send(jsonResponse);
+                        statusClean();
+                    }
+                }
+            })
+        }else{
+            jsonResponse.error = 400;
+            jsonResponse.message = "llene todos los parametros obligatorios"
+            
+            res.status(jsonResponse.error).send(jsonResponse);
+            statusClean();
+        }
+    }else{
+        jsonResponse.error = 403;
+        jsonResponse.message = "no posees los permisos necesarios"
+        
+        res.status(jsonResponse.error).send(jsonResponse);
+        statusClean();
+    }
+}
+
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
 
 function deleter(req,res){
@@ -644,7 +824,93 @@ function deleter(req,res){
     
     var idProduct = req.params.idProduct;
     var datatoken = req.user;
+    var params = req.body;
     
+    //all vars in use
+    var schema = {};
+
+    productModel.findById(idProduct,(err,productFound)=>{
+        if(err){
+            jsonResponse.error = 403;
+            jsonResponse.message = "no posees los permisos necesarios";
+            res.status(jsonResponse.error).send(jsonResponse);
+            statusClean();
+        }else{
+            if(productFound){
+                productModel.findOne({$and:[
+                    {idCompany: productFound.idCompany},
+                    {nameProduct: productFound.nameProduct},
+                    {nameProvedor: productFound.nameProvedor},
+                    {idDestiny: productFound.idCompany},
+                ]},(err,productFounds)=>{
+                    if(err){
+
+                    }else{
+                        if(productFounds){
+                            productFounds.stock = parseInt(productFounds.stock);
+                            productFound.stock = parseInt(productFound.stock);
+                            schema.stock = productFounds.stock + productFound.stock;
+                            productModel.findOneAndUpdate({$and:[
+                                {idCompany: productFound.idCompany},
+                                {nameProduct: productFound.nameProduct},
+                                {nameProvedor: productFound.nameProvedor},
+                                {idDestiny: productFound.idCompany},
+                            ]},schema,{new: true, useFindAndModify: false}, (err, productUpdate)=>{
+                                if(err){
+
+                                }else{
+                                    if(productUpdate){
+                                        productModel.findByIdAndDelete(idProduct,(err,productDelete)=>{
+                                            if(err){
+
+                                            }else{
+                                                if(productDelete){
+                                                    schema.stock = productDelete.stock
+                                                    console.log(schema)
+                                                    jsonResponse.error = 200;
+                                                    jsonResponse.message = "producto eliminada!!"
+                                                }else{
+
+                                                }
+                                            }
+                                        })
+                                    }
+                                }
+                            })
+                        }else{
+                            productModel.findByIdAndDelete(idProduct,(err,productDelete)=>{
+                                if(err){
+
+                                }else{
+                                    if(productDelete){
+                                        schema.stock = productDelete.stock
+                                        console.log(schema)
+                                        jsonResponse.error = 200;
+                                        jsonResponse.message = "producto eliminada!!"
+                                    }else{
+
+                                    }
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        }
+    })
+
+    params.nameProduct?schema.nameProduct = params.nameProduct:null;
+    params.nameProvedor?schema.nameProvedor = params.nameProvedor:null;
+    params.stock?schema.stock = params.stock:null;
+    params.sale?schema.sale = params.sale:null;
+    params.idDestiny?schema.idDestiny = params.idDestiny:null;
+
+    datatoken && datatoken.rolUser == "admin"?params.idCompany?schema.idCompany = params.idCompany:null:null;
+
+    
+    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idPlace:null;
+
+
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
         productModel.findByIdAndDelete(idProduct, (err, productDelete)=>{
             if(err){
@@ -703,5 +969,6 @@ module.exports = {
     add,
     table,
     change,
+    deleter,
 
 }

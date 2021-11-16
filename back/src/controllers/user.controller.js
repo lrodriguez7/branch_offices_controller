@@ -47,8 +47,8 @@ function register(req, res){
             params.rolUser
         ){
             userModel.findOne({
-                $and: [
-                    {idPlace: params.idPlace},
+                $or: [
+                    {emailUser: params.emailUser},
                     {nickUser: params.nickUser}
                 ]
             }).exec((err, userFound)=>{
