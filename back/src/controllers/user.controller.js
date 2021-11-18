@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt-nodejs");
 var token = new Auth();
 
 const userModel = require("../models/user.model");
+const branchModel = require("../models/branch.model");
 
 
 
@@ -26,6 +27,7 @@ function register(req, res){
     var registerModel;
     var schema = {};
 
+    params.idCompany?schema.idCompany = params.idCompany:null;
     params.idPlace?schema.idPlace = params.idPlace:null;
     params.nameUser?schema.nameUser = params.nameUser:null;
     params.lastnameUser?schema.lastnameUser = params.lastnameUser:null;
@@ -34,59 +36,133 @@ function register(req, res){
     params.passwordUser?schema.passwordUser = bcrypt.hashSync(params.passwordUser):null;
 
     params.rolUser?schema.rolUser = params.rolUser:null;
+
+    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idPlace:null;
+    datatoken && datatoken.rolUser == "company"?schema.rolUser = "branch":null;
     
     console.log(schema)
-    if(datatoken.rolUser == "admin"){
+    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
         if(
+            schema.idCompany &&
             params.idPlace &&
             params.nameUser &&
             params.lastnameUser &&
             params.nickUser &&
             params.emailUser &&
             params.passwordUser &&
-            params.rolUser
+            schema.rolUser &&
+            params.idPlace.length == 5 ||
+            params.idPlace.length == 7
         ){
-            userModel.findOne({
-                $or: [
-                    {emailUser: params.emailUser},
-                    {nickUser: params.nickUser}
-                ]
-            }).exec((err, userFound)=>{
-                if(err){
-                    jsonResponse.message = "Error al comprobar el usuario";
-
-                    res.status(jsonResponse.error).send(jsonResponse);
-                    statusClean();
+            if(datatoken.rol == "company" && params.idPlace == 7){
+                jsonResponse.error = 400;
+                jsonResponse.message = "no puedes crear otro admin";
+                res.status(jsonResponse.error).send(jsonResponse);
+                statusClean();
+            }else{
+                if(params.idPlace.length == 5){
+                    branchModel.findOne({idBranch: schema.idPlace},(err,branchFound)=>{
+                        if(err){
+                            jsonResponse.message = "Error al comprobar el usuario";
+        
+                            res.status(jsonResponse.error).send(jsonResponse);
+                            statusClean();
+                        }else{
+                            if(branchFound){
+                                userModel.findOne({
+                                    $or: [
+                                        {emailUser: params.emailUser},
+                                        {nickUser: params.nickUser}
+                                    ]
+                                }).exec((err, userFound)=>{
+                                    if(err){
+                                        jsonResponse.message = "Error al comprobar el usuario";
+                    
+                                        res.status(jsonResponse.error).send(jsonResponse);
+                                        statusClean();
+                                    }else{
+                                        if(userFound){
+                                            jsonResponse.error = 400;
+                                            jsonResponse.message = "Error de registro, el usuario ya existe";
+                                            jsonResponse.data = userFound;
+                    
+                                            res.status(jsonResponse.error).send(jsonResponse);
+                                            statusClean();
+                                        }else{
+                                            registerModel = new userModel(schema);
+                    
+                                            registerModel.save((err, userSaved)=>{
+                                                if(err){
+                                                    jsonResponse.message = "Error al registrar usuario";
+                    
+                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                    statusClean();
+                                                }else{
+                                                    jsonResponse.message = "usuario registrado!!";
+                                                    jsonResponse.data = {userSaved};
+                    
+                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                    statusClean();
+                                                    //login(req, res);
+                                                }
+                                            })
+                                        }
+                                    }
+                                });
+                                statusClean();
+                            }else{
+                                jsonResponse.error = 404
+                                jsonResponse.message = "Error, no existe la sucursal que se le asigna al usuario";
+                                
+                                res.status(jsonResponse.error).send(jsonResponse);
+                                statusClean();
+                            }
+                        }
+                    })
                 }else{
-                    if(userFound){
-                        jsonResponse.error = 400;
-                        jsonResponse.message = "Error de registro, el usuario ya existe";
-                        jsonResponse.data = userFound;
-
-                        res.status(jsonResponse.error).send(jsonResponse);
-                        statusClean();
-                    }else{
-                        registerModel = new userModel(schema);
-
-                        registerModel.save((err, userSaved)=>{
-                            if(err){
-                                jsonResponse.message = "Error al registrar usuario";
-
+                    userModel.findOne({
+                        $or: [
+                            {emailUser: params.emailUser},
+                            {nickUser: params.nickUser}
+                        ]
+                    }).exec((err, userFound)=>{
+                        if(err){
+                            jsonResponse.message = "Error al comprobar el usuario";
+        
+                            res.status(jsonResponse.error).send(jsonResponse);
+                            statusClean();
+                        }else{
+                            if(userFound){
+                                jsonResponse.error = 400;
+                                jsonResponse.message = "Error de registro, el usuario ya existe";
+                                jsonResponse.data = userFound;
+        
                                 res.status(jsonResponse.error).send(jsonResponse);
                                 statusClean();
                             }else{
-                                jsonResponse.message = "usuario registrado!!";
-                                jsonResponse.data = {userSaved};
-
-                                res.status(jsonResponse.error).send(jsonResponse);
-                                statusClean();
-                                //login(req, res);
+                                registerModel = new userModel(schema);
+        
+                                registerModel.save((err, userSaved)=>{
+                                    if(err){
+                                        jsonResponse.message = "Error al registrar usuario";
+        
+                                        res.status(jsonResponse.error).send(jsonResponse);
+                                        statusClean();
+                                    }else{
+                                        jsonResponse.message = "usuario registrado!!";
+                                        jsonResponse.data = {userSaved};
+        
+                                        res.status(jsonResponse.error).send(jsonResponse);
+                                        statusClean();
+                                        //login(req, res);
+                                    }
+                                })
                             }
-                        })
-                    }
+                        }
+                    });
+                    statusClean();
                 }
-            });
-            statusClean();
+            }
         }else{
             jsonResponse.error = 400;
             jsonResponse.message = "rellene todos los campos obligatorios";
@@ -350,6 +426,43 @@ function removeAuto(req, res){
     }
 }
 
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
+
+function listCompany(req, res){
+
+    statusClean();
+    
+    var datatoken = req.user;
+    var order = 1;
+    var idPlace = datatoken.idPlace;
+    if(datatoken.rolUser == "company"){
+        userModel.find({$and:[{idCompany: idPlace},{rolUser: "branch"}]}).sort({idPlace: order}).exec((err, usersFound)=>{
+            if(err){
+                jsonResponse.message = "error al listar los usuarios";
+            }else{
+                console.log(usersFound)
+                if(usersFound && usersFound.length > 0){
+                    jsonResponse.error = 200;
+                    jsonResponse.message = "Usuarios obtenidos";
+                    jsonResponse.data = usersFound;
+                }else{
+                    jsonResponse.error = 404;
+                    jsonResponse.message = "no se encontraron los usuarios";
+                }
+            }
+            res.status(jsonResponse.error).send(jsonResponse);
+            statusClean();
+        });
+    }else{
+        jsonResponse.error = 403;
+        jsonResponse.message = "No tienes acceso";
+
+        res.status(jsonResponse.error).send(jsonResponse);
+        statusClean();
+    }
+    statusClean();
+}
+
 
 //=====================================================================================================\\
 //                                         Reusable functions 
@@ -375,5 +488,6 @@ module.exports = {
     search,
     edit,
     remove,
-    removeAuto
+    removeAuto,
+    listCompany,
 }

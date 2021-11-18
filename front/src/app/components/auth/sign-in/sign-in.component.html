@@ -20,7 +20,7 @@
                               <form (submit)="signIn()">
                                 <div class="form-group ">
                           <div class="form-group">
-                            <input type="email" name="emailUser" id="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email" required="required" [(ngModel)]="userModel.emailUser">
+                            <input type="email" name="emailUser" id="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="User/Email" required="required" [(ngModel)]="userModel.nickUser" [(ngModel)]="userModel.emailUser">
                           </div>
                                 <div class="form-group">
                                     <input type="password" name="passwordUser"  class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" required="required"[(ngModel)]="userModel.passwordUser">

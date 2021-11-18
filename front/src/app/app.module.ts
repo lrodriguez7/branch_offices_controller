@@ -10,6 +10,10 @@ import { SignInComponent } from './components/auth/sign-in/sign-in.component';
 import { HomeComponent } from './components/start/home/home.component';
 import { DefaultComponent } from './components/navbar/default/default.component';
 import { SignOutComponent } from './components/auth/sign-out/sign-out.component';
+import { NavCompanyComponent } from './components/navbar/nav-company/nav-company.component';
+import { AboutComponent } from './components/start/about/about.component';
+import { UsersComponent } from './components/users/company/users/users.component';
+import { BranchComponent } from './components/users/company/branch/branch.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +21,11 @@ import { SignOutComponent } from './components/auth/sign-out/sign-out.component'
     SignInComponent,
     HomeComponent,
     DefaultComponent,
-    SignOutComponent
+    SignOutComponent,
+    NavCompanyComponent,
+    AboutComponent,
+    UsersComponent,
+    BranchComponent
   ],
   imports: [
     BrowserModule,

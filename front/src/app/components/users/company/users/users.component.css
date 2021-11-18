@@ -1,0 +1,22 @@
+.menuBt{
+  width: 100%;
+  padding: 10px 0;
+  position: relative;
+  text-align: right;
+}
+
+.btRight{
+  margin: 0 5px;
+}
+
+tbody tr{
+  cursor: pointer;
+}
+
+.contentTable {
+  padding: 0 10px;
+}
+
+.form-control{
+  margin: 10px 0;
+}

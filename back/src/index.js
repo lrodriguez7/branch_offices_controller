@@ -49,7 +49,7 @@ function initApp(){
                         nickUser: "admin",
                         emailUser: "admin@gmail.com",
                         rolUser: "admin",
-                        passwordUser: bcrypt.hashSync("123456")
+                        passwordUser: bcrypt.hashSync("12345678")
                     });
                     model.save();
                     console.log("admin default creado");
@@ -70,6 +70,7 @@ function initApp(){
             }else{
                 if(!user){
                     model = new userModel({
+                        idCompany: "2021001",
                         idPlace: "2021001",
                         nameUser: "admin",
                         lastnameUser: "mcdonalds",
@@ -96,6 +97,7 @@ function defaultClient(){
         }else{
             if(!user){
                 model = new userModel({
+                    idCompany: "2021001",
                     idPlace: "21001",
                     nameUser: "client",
                     lastnameUser: "client",
@@ -142,6 +144,7 @@ function defaultBranch(){
         }else{
             if(!user){
                 model = new branchModel({
+                    idBranch: "21001",
                     idCompany: "2021001",
                     addressBranch: "zona 4",
                     nameBranch: "plaza 4",

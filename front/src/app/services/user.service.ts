@@ -73,6 +73,20 @@ export class UserService {
 
   getUsers(): Observable<any> {
     let headersToken = this.headersVar.set('Authorization', this.getToken())
-    return this.http.get(this.rute + '/users', { headers: headersToken })
+    return this.http.get(this.rute + '/company/users', { headers: headersToken })
   }
+
+  register(user: User): Observable<any> {
+    let params = JSON.stringify(user);
+    let headersToken;
+
+    if(localStorage.getItem("token")){
+      this.token = JSON.parse(localStorage.getItem('token')!);
+      headersToken = this.headersVar.set('Authorization', JSON.parse(localStorage.getItem('token')!))
+    }else{
+      headersToken = this.headersVar;
+    }
+    return this.http.post(this.rute + 'user/register', params, { headers: headersToken })
+  }
+
 }
