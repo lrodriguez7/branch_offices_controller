@@ -25,8 +25,8 @@ function register(req, res){
 
     params.nameCompany?schema.nameCompany = params.nameCompany:null;
     params.idCompany?schema.idCompany = params.idCompany:null;
-    
-
+    schema.sale = 0;
+    params.sale?schema.sale = params.sale:null;
     params.rolUser?schema.rolUser = params.rolUser:null;
     
     console.log(schema)

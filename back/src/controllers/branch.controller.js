@@ -28,6 +28,7 @@ function register(req, res){
     params.nameBranch?schema.nameBranch = params.nameBranch:null;
     params.addressBranch?schema.addressBranch = params.addressBranch:null;
     params.idCompany?schema.idCompany = params.idCompany:null;
+    schema.sale = 0;
     params.sale?schema.sale = params.sale:null;
     
     console.log(schema)
