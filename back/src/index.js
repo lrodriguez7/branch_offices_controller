@@ -125,6 +125,7 @@ function defaultCompany(){
                 model = new companyModel({
                     idCompany: "2021001",
                     nameCompany: "McDonald's",
+                    sale: 0,
                     
                 });
                 model.save();
@@ -148,6 +149,7 @@ function defaultBranch(){
                     idCompany: "2021001",
                     addressBranch: "zona 4",
                     nameBranch: "plaza 4",
+                    sale: 0,
                     
                 });
                 model.save();

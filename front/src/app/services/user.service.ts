@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 export class UserService {
 
   public rute: String;
-  public token: any;
+  public token: any = "";
   public auth: any;
   public headersVar = new HttpHeaders().set('Content-Type', 'application/json');
   public users: User[] | undefined;
@@ -81,12 +81,23 @@ export class UserService {
     let headersToken;
 
     if(localStorage.getItem("token")){
-      this.token = JSON.parse(localStorage.getItem('token')!);
-      headersToken = this.headersVar.set('Authorization', JSON.parse(localStorage.getItem('token')!))
+      this.token = localStorage.getItem('token')
+      headersToken = this.headersVar.set('Authorization', this.token);
     }else{
       headersToken = this.headersVar;
     }
-    return this.http.post(this.rute + 'user/register', params, { headers: headersToken })
+    return this.http.post(this.rute + '/user/register', params, { headers: headersToken })
+  }
+
+  edit(user: User): Observable<any> {
+    let params = JSON.stringify(user);
+    let headersToken = this.headersVar.set('Authorization', this.getToken())
+    return this.http.put(this.rute + '/user/edit/'+user._id, params, { headers: headersToken })
+  }
+
+  deleter(id: String): Observable<any> {
+    let headersToken = this.headersVar.set('Authorization', this.getToken());
+    return this.http.delete(this.rute + '/user/delete/' + id, { headers: headersToken })
   }
 
 }

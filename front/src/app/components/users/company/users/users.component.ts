@@ -57,12 +57,71 @@ export class UsersComponent implements OnInit {
     for (let i = 0; i < this.tableUsers.length && encontrado == false; i++) {
       if(this.tableUsers[i]._id == id){
         this.updateUserModel = this.tableUsers[i];
+        console.log(this.updateUserModel);
       }
     }
   }
 
-  registrar(){
+  register(){
     this.userService.register(this.userModel).subscribe(response => {
+      Swal.fire({
+        position: 'center',
+          icon: 'success',
+          title: response.message,
+          showConfirmButton: false,
+          timer: 1500
+      })
+      this.getList();
+
+    }, err => {
+      Swal.fire({
+        position: 'center',
+          icon: 'error',
+          title: err.error.message,
+          showConfirmButton: false,
+          timer: 1500
+
+      })
+
+    });
+  }
+  edit(){
+    this.userService.edit(this.updateUserModel).subscribe(response => {
+      Swal.fire({
+        position: 'center',
+          icon: 'success',
+          title: response.message,
+          showConfirmButton: false,
+          timer: 1500
+      })
+
+      this.updateUserModel = new User(
+          response.data._id,
+          response.data.idCompany,
+          response.data.idPlace,
+          response.data.nameUser,
+          response.data.lastnameUser,
+          response.data.nickUser,
+          response.data.emailUser,
+          "",
+          ""
+      );
+
+
+      this.getList();
+    }, err => {
+      Swal.fire({
+        position: 'center',
+          icon: 'error',
+          title: err.error.message,
+          showConfirmButton: false,
+          timer: 1500
+      })
+    });
+  }
+
+  deleter(){
+    this.userService.deleter(this.updateUserModel._id).subscribe(response => {
       Swal.fire({
         position: 'center',
           icon: 'success',
@@ -72,11 +131,11 @@ export class UsersComponent implements OnInit {
       })
 
       this.getList();
-    }, error => {
+    }, errr => {
       Swal.fire({
         position: 'center',
           icon: 'success',
-          title: error.error.message,
+          title: errr.error.message,
           showConfirmButton: false,
           timer: 1500
       })
@@ -84,8 +143,7 @@ export class UsersComponent implements OnInit {
   }
 
 
-
-  limpiar(){
+  clean(){
 
     this.userModel = new User("","","","","","","","","");
     this.updateUserModel = new User("","","","","","","","","");

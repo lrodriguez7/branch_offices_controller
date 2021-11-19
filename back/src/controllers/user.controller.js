@@ -54,7 +54,7 @@ function register(req, res){
             params.idPlace.length == 5 ||
             params.idPlace.length == 7
         ){
-            if(datatoken.rol == "company" && params.idPlace == 7){
+            if(datatoken.rolUser == "company" && params.idPlace.length  == 7){
                 jsonResponse.error = 400;
                 jsonResponse.message = "no puedes crear otro admin";
                 res.status(jsonResponse.error).send(jsonResponse);
@@ -98,6 +98,7 @@ function register(req, res){
                                                     res.status(jsonResponse.error).send(jsonResponse);
                                                     statusClean();
                                                 }else{
+                                                    jsonResponse.error = 200;
                                                     jsonResponse.message = "usuario registrado!!";
                                                     jsonResponse.data = {userSaved};
                     
@@ -298,7 +299,7 @@ function search(req, res){
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
 
-function edit(req, res){
+function edits(req, res){
 
     statusClean();
 
@@ -314,31 +315,239 @@ function edit(req, res){
     params.nickUser?schema.nickUser = params.nickUser:null;
     params.emailUser?schema.emailUser = params.emailUser:null;
     params.passwordUser?schema.passwordUser = bcrypt.hashSync(params.passwordUser):null;
-    params.rolUser?schema.rolUser = params.rolUser:null; 
+    datatoken.rolUser == "admin"?params.rolUser?schema.rolUser = params.rolUser:null:null;
+
     
     console.log(schema)
-    if(datatoken.rolUser == "admin"){
-        userModel.findByIdAndUpdate(idUser,schema, {new: true, useFindAndModify: false}, (err, userUpdated)=>{
+    if(datatoken.rolUser == "admin"|| datatoken.rolUser == "company"){
+        userModel.findById(idUser,(err,userIdFound)=>{
             if(err){
-                jsonResponse.message = "error al editar usuario";
-                
+                jsonResponse.message = "error, no se pudo editar el usuario";
+                                                                                                                    
                 res.status(jsonResponse.error).send(jsonResponse);
             }else{
-                if(userUpdated){
-                    jsonResponse.error = 200;
-                    jsonResponse.message = "usuario actualizado!!"
-                    jsonResponse.data = userUpdated;
+                if(userIdFound){
+                    userModel.findOne({nickUser:schema.nick},(err,usersFound)=>{
+                        if(usersFound){
+                            if(err){
+                                jsonResponse.message = "error, no se pudo editar el usuario";
+                                                                                                                    
+                                res.status(jsonResponse.error).send(jsonResponse);
+                            }else{
+                                if(usersFound){
+                                    userModel.findOne({emailUser:schema.emailUser},(err,usersFounds)=>{
+                                            if(err){
+                                                jsonResponse.message = "error, no se pudo editar el usuario";
+                                                                                                                    
+                                                res.status(jsonResponse.error).send(jsonResponse);
+                                            }else{
+                                                if(usersFounds){
+                                                    if(usersFound.nickUser == schema.nickUser && usersFound._id == idUser){
+                                                        if(usersFounds.emailUser == schema.emailUser && usersFounds._id == idUser){
+                                                            branchModel.findOne({idBranch: schema.idPlace},(err,branchFound)=>{
+                                                                if(err){
+                                                                    jsonResponse.message = "Error al comprobar el usuario";
+                                                
+                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                    statusClean();
+                                                                }else{
+                                                                    if(branchFound){
+                                                                        userModel.findByIdAndUpdate(idUser,schema, {new: true, useFindAndModify: false}, (err, userUpdated)=>{
+                                                                            if(err){
+                                                                                jsonResponse.message = "error al editar usuario";
+                                                                                
+                                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                                            }else{
+                                                                                if(userUpdated){
+                                                                                    jsonResponse.error = 200;
+                                                                                    jsonResponse.message = "usuario actualizado!!"
+                                                                                    jsonResponse.data = userUpdated;
+                                                                
+                                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                                }else{
+                                                                                    jsonResponse.error = 404;
+                                                                                    jsonResponse.message = "no se encontro el usuario";
+                                                                
+                                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                                }
+                                                                            }
+                                                                            statusClean();
+                                                                        });
+                                                                    }else{
+                                                                        jsonResponse.error = 404;
+                                                                        jsonResponse.message = "no se encontro la sucursal a la asignacion del usuario";
+                                                    
+                                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                                    }
+                                                                }
+                                                            });
+                                                        }else{
+                                                            jsonResponse.error = 400;
+                                                            jsonResponse.message = "error, usuario con ese correo ya existente";
 
-                    res.status(jsonResponse.error).send(jsonResponse);
+                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                        }
+                                                    }else{
+                                                        jsonResponse.error = 400;
+                                                        jsonResponse.message = "error, usuario con ese nombre ya existente";
+
+                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                    }
+                                                }else{
+                                                    if(usersFound.nickUser == schema.nickUser && usersFound._id == idUser){
+                                                        branchModel.findOne({idBranch: schema.idPlace},(err,branchFound)=>{
+                                                            if(err){
+                                                                jsonResponse.message = "Error al comprobar el usuario";
+                                            
+                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                                statusClean();
+                                                            }else{
+                                                                if(branchFound){
+                                                                    userModel.findByIdAndUpdate(idUser,schema, {new: true, useFindAndModify: false}, (err, userUpdated)=>{
+                                                                        if(err){
+                                                                            jsonResponse.message = "error al editar usuario";
+                                                                            
+                                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                                        }else{
+                                                                            if(userUpdated){
+                                                                                jsonResponse.error = 200;
+                                                                                jsonResponse.message = "usuario actualizado!!"
+                                                                                jsonResponse.data = userUpdated;
+                                                            
+                                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                                            }else{
+                                                                                jsonResponse.error = 404;
+                                                                                jsonResponse.message = "no se encontro el usuario";
+                                                            
+                                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                                            }
+                                                                        }
+                                                                        statusClean();
+                                                                    });
+                                                                }else{
+                                                                    jsonResponse.error = 404;
+                                                                    jsonResponse.message = "no se encontro la sucursal a la asignacion del usuario";
+                                                
+                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                }
+                                                            }
+                                                        });
+                                                    }else{
+                                                        jsonResponse.error = 400;
+                                                        jsonResponse.message = "error, usuario con ese nombre ya existente";
+                                                                                                                    
+                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                    }
+                                                }
+                                            }
+                                    })
+                                }else{
+                                    userModel.findOne({emailUser:schema.emailUser},(err,usersFounds)=>{
+                                            if(err){
+                                                jsonResponse.message = "error, no se pudo editar el usuario";
+                                                                                                                    
+                                                res.status(jsonResponse.error).send(jsonResponse);
+                                            }else{
+                                                if(usersFounds){
+
+                                                        if(usersFounds.emailUser == schema.emailUser && usersFounds._id == idUser){
+                                                            branchModel.findOne({idBranch: schema.idPlace},(err,branchFound)=>{
+                                                                if(err){
+                                                                    jsonResponse.message = "Error al comprobar el usuario";
+                                                
+                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                    statusClean();
+                                                                }else{
+                                                                    if(branchFound){
+                                                                        userModel.findByIdAndUpdate(idUser,schema, {new: true, useFindAndModify: false}, (err, userUpdated)=>{
+                                                                            if(err){
+                                                                                jsonResponse.message = "error al editar usuario";
+                                                                                
+                                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                                            }else{
+                                                                                if(userUpdated){
+                                                                                    jsonResponse.error = 200;
+                                                                                    jsonResponse.message = "usuario actualizado!!"
+                                                                                    jsonResponse.data = userUpdated;
+                                                                
+                                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                                }else{
+                                                                                    jsonResponse.error = 404;
+                                                                                    jsonResponse.message = "no se encontro el usuario";
+                                                                
+                                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                                }
+                                                                            }
+                                                                            statusClean();
+                                                                        });
+                                                                    }else{
+                                                                        jsonResponse.error = 404;
+                                                                        jsonResponse.message = "no se encontro la sucursal a la asignacion del usuario";
+                                                    
+                                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                                    }
+                                                                }
+                                                            });
+                                                        }else{
+                                                            jsonResponse.error = 400;
+                                                            jsonResponse.message = "error,usuario con ese correo ya existente";
+                                                                                                                        
+                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                        }
+                                                }else{
+                                                    branchModel.findOne({idBranch: schema.idPlace},(err,branchFound)=>{
+                                                        if(err){
+                                                            jsonResponse.message = "Error al comprobar el usuario";
+                                        
+                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                            statusClean();
+                                                        }else{
+                                                            if(branchFound){
+                                                                userModel.findByIdAndUpdate(idUser,schema, {new: true, useFindAndModify: false}, (err, userUpdated)=>{
+                                                                    if(err){
+                                                                        jsonResponse.message = "error al editar usuario";
+                                                                        
+                                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                                    }else{
+                                                                        if(userUpdated){
+                                                                            jsonResponse.error = 200;
+                                                                            jsonResponse.message = "usuario actualizado!!"
+                                                                            jsonResponse.data = userUpdated;
+                                                        
+                                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                                        }else{
+                                                                            jsonResponse.error = 404;
+                                                                            jsonResponse.message = "no se encontro el usuario";
+                                                        
+                                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                                        }
+                                                                    }
+                                                                    statusClean();
+                                                                });
+                                                            }else{
+                                                                jsonResponse.error = 404;
+                                                                jsonResponse.message = "no se encontro la sucursal a la asignacion del usuario";
+                                            
+                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                    })
+                                }
+                            }
+                        }
+                    })
                 }else{
                     jsonResponse.error = 404;
-                    jsonResponse.message = "no se encontro el usuario";
+                    jsonResponse.message = "No se encontro el usuario a editar";
 
                     res.status(jsonResponse.error).send(jsonResponse);
                 }
             }
-            statusClean();
-        });
+        })
+        
     }else{
         jsonResponse.error = 403;
         jsonResponse.message = "No tienes permisos para editar";
@@ -350,6 +559,72 @@ function edit(req, res){
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
 
+function edit(req,res){
+    statusClean();
+
+    var params = req.body;
+    var idUser = req.params._id;
+    var datatoken = req.user;
+
+    var schema = {};
+    
+    params.idPlace?schema.idPlace = params.idPlace:null;
+    params.nameUser?schema.nameUser = params.nameUser:null;
+    params.lastnameUser?schema.lastnameUser = params.lastnameUser:null;
+    params.nickUser?schema.nickUser = params.nickUser:null;
+    params.emailUser?schema.emailUser = params.emailUser:null;
+    params.passwordUser?schema.passwordUser = bcrypt.hashSync(params.passwordUser):null;
+    datatoken.rolUser == "admin"?params.rolUser?schema.rolUser = params.rolUser:null:null;
+
+    
+    console.log(schema)
+    if(datatoken.rolUser == "admin"|| datatoken.rolUser == "company"){
+        branchModel.findOne({idBranch: schema.idPlace},(err,branchFound)=>{
+            if(err){
+                jsonResponse.message = "Error al comprobar el usuario";
+
+                res.status(jsonResponse.error).send(jsonResponse);
+                statusClean();
+            }else{
+                if(branchFound){
+                    userModel.findByIdAndUpdate(idUser,schema, {new: true, useFindAndModify: false}, (err, userUpdated)=>{
+                        if(err){
+                            jsonResponse.message = "error al editar usuario";
+                            
+                            res.status(jsonResponse.error).send(jsonResponse);
+                        }else{
+                            if(userUpdated){
+                                jsonResponse.error = 200;
+                                jsonResponse.message = "usuario actualizado!!"
+                                jsonResponse.data = userUpdated;
+            
+                                res.status(jsonResponse.error).send(jsonResponse);
+                            }else{
+                                jsonResponse.error = 404;
+                                jsonResponse.message = "no se encontro el usuario";
+            
+                                res.status(jsonResponse.error).send(jsonResponse);
+                            }
+                        }
+                        statusClean();
+                    });
+                }else{
+                    jsonResponse.error = 404;
+                    jsonResponse.message = "no se encontro la sucursal a la asignacion del usuario";
+
+                    res.status(jsonResponse.error).send(jsonResponse);
+                }
+            }
+        });
+    }else{
+
+    }
+    
+
+}
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
+
 function remove(req, res){
     
     statusClean();
@@ -357,7 +632,7 @@ function remove(req, res){
     var idUser = req.params._id;
     var datatoken = req.user;
     
-    if(datatoken.rolUser == "admin"){
+    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
         userModel.findByIdAndDelete(idUser, (err, userDeleted)=>{
             if(err){
                 jsonResponse.message = "error al eliminar usuario"

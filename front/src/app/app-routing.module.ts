@@ -6,6 +6,8 @@ import { SignInComponent } from './components/auth/sign-in/sign-in.component';
 import { SignOutComponent } from './components/auth/sign-out/sign-out.component';
 import { AboutComponent } from './components/start/about/about.component';
 import { UsersComponent } from './components/users/company/users/users.component';
+import { BranchComponent } from './components/users/company/branch/branch.component';
+import { ProductsComponent } from './components/users/company/products/products.component';
 
 const routes: Routes = [
 
@@ -15,6 +17,9 @@ const routes: Routes = [
   {path: 'signOut', component: SignOutComponent},
   {path: 'about', component: AboutComponent},
   {path: 'user', component: UsersComponent},
+  {path: 'branch', component: BranchComponent},
+  {path: 'product', component: ProductsComponent},
+
 
 ];
 

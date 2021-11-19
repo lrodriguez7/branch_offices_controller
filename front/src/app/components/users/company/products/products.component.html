@@ -1,31 +1,31 @@
 <app-nav-company></app-nav-company>
 <div class="container p-3">
   <div class="menuBt">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Create Branch</button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Create Product</button>
   </div>
   <table class="table table-hover">
     <thead>
       <tr>
         <th scope="col ">ID</th>
         <th scope="col">ID COMPANY</th>
-        <th scope="col">ID BRANCH</th>
-        <th scope="col">NAME</th>
-        <th scope="col">ADDRESS</th>
+        <th scope="col">PRODUCT</th>
+        <th scope="col">PROVIDER</th>
+        <th scope="col">STOCK</th>
         <th scope="col">SALE</th>
-        <th scope="col">EDIT / REMOVE</th>
+        <th scope="col">SEND / EDIT / REMOVE</th>
 
       </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let dt of tableBranch">
+    <tr *ngFor="let dt of tableProduct">
       <td>{{dt._id}}</td>
       <td>{{dt.idCompany}}</td>
-      <td>{{dt.idBranch}}</td>
-      <td>{{dt.nameBranch}}</td>
-      <td>{{dt.addressBranch}}</td>
+      <td>{{dt.nameProduct}}</td>
+      <td>{{dt.nameProvedor}}</td>
+      <td>{{dt.stock}}</td>
       <td>{{dt.sale}}</td>
       <td>
-        <button type="button" class="btn btn-info  " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)">Products</button>
+        <button type="button" class="btn btn-info  " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)">Send</button>
         <button type="button" class="btn btn-info mx-2 " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)">Edit</button>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal" (click)="get(dt._id)">Remove</button>
 
@@ -34,23 +34,24 @@
 
   </tbody>
   </table>
+
   <!-- MODALS -->
 
   <div class="modal fade" id="RegisterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">creating branch...</h5>
+          <h5 class="modal-title" id="exampleModalLabel">creating Product...</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <h6>Id Branch</h6>
-            <input placeholder="id branch" name="idBranch" type="text" class="form-control" required="required" [(ngModel)]="branchModel.idBranch" >
-          <h6>Name</h6>
-          <input placeholder="Name" name="nameBranch" type="text" class="form-control" required="required" [(ngModel)]="branchModel.nameBranch" >
-          <h6>Address</h6>
-          <input placeholder="Address" name="addressBranch" type="text" class="form-control" required="required" [(ngModel)]="branchModel.addressBranch" >
+          <h6>Product</h6>
+          <input placeholder="Name" name="nameProduct" type="text" class="form-control" required="required" [(ngModel)]="productModel.nameProduct" >
+          <h6>Provider</h6>
+          <input placeholder="Provider" name="nameProvider" type="text" class="form-control" required="required" [(ngModel)]="productModel.nameProvedor" >
+          <h6>Stock</h6>
+          <input placeholder="stock" name="stock" type="number" class="form-control" required="required" [(ngModel)]="productModel.stock" >
       </div>
         </div>
         <div class="modal-footer">
@@ -61,22 +62,21 @@
     </div>
   </div>
 
-
   <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Editing branch...</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Editing Product...</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <h6>Id Branch</h6>
-            <input placeholder="id branch" name="idBranch" type="text" class="form-control" required="required" [(ngModel)]="updateBranchModel.idBranch" >
-          <h6>Name</h6>
-          <input placeholder="Name" name="nameBranch" type="text" class="form-control" required="required" [(ngModel)]="updateBranchModel.nameBranch" >
-          <h6>Address</h6>
-          <input placeholder="Address" name="addressBranch" type="text" class="form-control" required="required" [(ngModel)]="updateBranchModel.addressBranch" >
+          <h6>Product</h6>
+          <input placeholder="Name" disabled="" name="nameProduct" type="text" class="form-control" required="required" [(ngModel)]="updateProductModel.nameProduct" >
+          <h6>Provider</h6>
+          <input placeholder="Provider" disabled="" name="nameProvider" type="text" class="form-control" required="required" [(ngModel)]="updateProductModel.nameProvedor" >
+          <h6>Stock</h6>
+          <input placeholder="stock" name="stock" type="number" class="form-control" required="required" [(ngModel)]="updateProductModel.stock" >
       </div>
         </div>
         <div class="modal-footer">
@@ -87,22 +87,21 @@
     </div>
   </div>
 
-
   <div class="modal fade" id="DeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Deleting branch...</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Deleting Product...</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <h6>Id Branch</h6>
-            <input placeholder="id branch" disabled="" name="idBranch" type="text" class="form-control" required="required" [(ngModel)]="updateBranchModel.idBranch" >
-          <h6>Name</h6>
-          <input placeholder="Name" disabled="" name="nameBranch" type="text" class="form-control" required="required" [(ngModel)]="updateBranchModel.nameBranch" >
-          <h6>Address</h6>
-          <input placeholder="Address" disabled="" name="addressBranch" type="text" class="form-control" required="required" [(ngModel)]="updateBranchModel.addressBranch" >
+          <h6>Product</h6>
+          <input placeholder="Name" disabled="" name="nameProduct" type="text" class="form-control" required="required" [(ngModel)]="updateProductModel.nameProduct" >
+          <h6>Provider</h6>
+          <input placeholder="Provider" disabled="" name="nameProvider" type="text" class="form-control" required="required" [(ngModel)]="updateProductModel.nameProvedor" >
+          <h6>Stock</h6>
+          <input placeholder="stock" disabled="" name="stock" type="number" class="form-control" required="required" [(ngModel)]="updateProductModel.stock" >
       </div>
         </div>
         <div class="modal-footer">
@@ -112,6 +111,7 @@
       </div>
     </div>
   </div>
+
 
 
 </div>>

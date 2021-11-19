@@ -1,78 +1,41 @@
 <app-default *ngIf="user.rolUser == 'user'"></app-default>
 <app-nav-company *ngIf="user.rolUser == 'company'"></app-nav-company>
 
-<div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+  <div class="row justify-content-center" style="width: 99%;">
+    <div class="col-xl-10 col-lg-12 col-md-9">
 
-  <div class="carousel-inner">
-    <div class="carousel-item active" data-bs-interval="10000">
-      <img src="../../../../assets/banner.jpg" class="d-block w-100" alt="...">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>WELCOME!!</h5>
-        <p>I hope you like our daily recommendations.</p>
-        <button  type="button" class="btn btn-light">see more</button>
-      </div>
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                    <div class="col-lg-6 d-none d-lg-block bg-login-image">
+                      <img src="https://johannesippen.com/img/blog/humans-not-users/header.jpg" class="d-block w-100">
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="px-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-3"></h1>
+                            </div>
+                            <div class="user" >
+                              <form>
+                                <div class="form-group ">
+                          <div class="form-group">
+                            <h5>Developer</h5>
+                            <input type="email" name="emailUser" id="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Luis Rodriguez" required="required" disabled="">
+                          </div>
+                                <div class="form-group">
+                                    <h5>Email</h5>
+                                    <input type="text" name="passwordUser"  class="form-control form-control-user" id="exampleInputPassword" placeholder="LuisF@gmail.com" required="required" disabled="">
+                                </div>
+                                <div class="form-group">
+                                  <h5>Contact</h5>
+                                  <input type="text" name="passwordUser"  class="form-control form-control-user" id="exampleInputPassword" placeholder="1214-3122" required="required" disabled="">
+                              </div>
+
+                        </div></form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-
-<div class="container">
-
-  <div class="card my-3 d-inline-block mx-2" style="width: 16rem;">
-    <img src="../../../../assets/fondoportada.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    </div>
-  </div>
-
-  <div class="card my-3 d-inline-block mx-2" style="width: 16rem;">
-    <img src="../../../../assets/fondoportada.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    </div>
-  </div>
-
-  <div class="card my-3 d-inline-block mx-2" style="width: 16rem;">
-    <img src="../../../../assets/fondoportada.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <button class="btn btn-primary btn-user btn-block">SIgn Up</button>
-    </div>
-  </div>
-
-  <div class="card my-3 d-inline-block mx-2" style="width: 16rem;">
-    <img src="../../../../assets/fondoportada.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    </div>
-  </div>
-
-
-
-
-
-
-
-<div class="card mb-0 d-inline-block mx-3" style="width: 32rem;">
-  <img src="../../../../assets/fondoportada.jpg" class="card-img-top w-100" alt="...">
-  <div class="card-body">
-    <h5 class="card-title">books</h5>
-    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-    <button class="btn btn-primary btn-user btn-block">SIgn Up</button>
-  </div>
-</div>
-
-<div class="card mb-0 d-inline-block mx-3" style="width: 32rem;">
-  <img src="../../../../assets/fondoportada2.jpg" class="card-img-top w-100" alt="...">
-  <div class="card-body">
-    <h5 class="card-title">library</h5>
-    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-  </div>
-</div>
-
-
-
-
-</div>
-

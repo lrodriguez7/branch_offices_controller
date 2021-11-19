@@ -1,43 +1,18 @@
-
 <app-nav-company></app-nav-company>
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-  Launch static backdrop modal
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Understood</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="container p-3">
   <div class="menuBt">
-    <button type="button" class="btn btn-primary btRight" data-toggle="modal" data-target="#formAdd">Crear Usuario</button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Create User</button>
   </div>
-  <!--<table class="table table-hover">
+  <table class="table table-hover">
     <thead>
       <tr>
         <th scope="col ">ID</th>
-        <th scope="col">idPlace</th>
+        <th scope="col">ID PLACE</th>
         <th scope="col">NAME</th>
         <th scope="col">LASTNAME</th>
         <th scope="col">NICK</th>
         <th scope="col">EMAIL</th>
+        <th scope="col">EDIT / REMOVE</th>
 
       </tr>
     </thead>
@@ -49,121 +24,114 @@
       <td>{{dt.lastnameUser}}</td>
       <td>{{dt.nickUser}}</td>
       <td>{{dt.emailUser}}</td>
+      <td>
+        <button type="button" class="btn btn-info mx-2 " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)">Edit</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal" (click)="get(dt._id)">Remove</button>
+
 
     </tr>
 
   </tbody>
   </table>
--->
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-2" *ngFor="let dt of tableUsers" (click)="get(dt._id)" data-toggle="modal" data-target="#formEdit">
-        <div class="card mb-1" style="height: 300px;">
-          <img class="card-img-top" src="https://cdn.icon-icons.com/icons2/2506/PNG/512/user_icon_150670.png" alt="Card image cap" onerror="this.onerror=null; this.src='https://iili.io/Ai5zfn.png';" style="max-height: 200px;">
-          <div class="card-body">
-            <h5 class="card-title">{{dt.nickUser}}</h5>
-            <small class="text-muted">{{dt.emailUser}}</small>
-          </div>
-        </div>
+
+  <!-- Modals -->
+<div class="modal fade" id="RegisterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">creating user...</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <h6>Branch</h6>
+          <input placeholder="id branch" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.idPlace" >
+        <h6>Name</h6>
+        <input placeholder="Name" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.nameUser" >
+        <h6>LastName</h6>
+        <input placeholder="lastName" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.lastnameUser" >
+        <h6>Usuario</h6>
+        <input placeholder="Nick" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.nickUser" >
+        <h6>Email</h6>
+        <input placeholder="Email" name="emailUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.emailUser" >
+        <h6>password</h6>
+        <input placeholder="Password" name="passwordUser" type="password" class="form-control" required="required" [(ngModel)]="userModel.passwordUser" >
+    </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clean()">Cancel</button>
+        <button type="button" class="btn btn-success"  (click)="register()" >Create</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="modal fade" id="formAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
-    <div class="modal-dialog" role="document" style="max-width: 100%;">
-      <div class="modal-content" style="width: 90%; margin: 0 auto;">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Añadir Usuario</h5>
-          <button type="button" class="close" (click)="limpiar()" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form enctype="multipart/form-data">
-            <div class="form-group">
-                <h4>Usuario</h4>
-                <input placeholder="Nombre de usuario" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.nickUser" id="title">
-            </div>
-            <div class="form-group">
-                <h4>Nombre Completo</h4>
-                <input placeholder="Nombre completo" name="fullNameUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.lastnameUser" id="title">
-            </div>
-            <div class="form-group">
-                <h4>Correo</h4>
-                <input placeholder="Correo electrónico" name="emailUser" type="email" class="form-control" required="required" [(ngModel)]="userModel.emailUser" id="title">
-            </div>
-            <div class="form-group">
-              <h4>Rol</h4>
-              <select name="rolUser" class="form-control" [(ngModel)]="userModel.rolUser">
-                <option [value]="'branch'" [selected]="true">Cliente</option>
-                <option [value]="'company'">Administrador</option>
-              </select>
-            </div>
-            <div class="form-group">
-                <h4>Contraseña</h4>
-                <input placeholder="Contraseña" name="passwordUser" type="password" class="form-control" required="required" [(ngModel)]="userModel.passwordUser" id="title">
-            </div>
-            <div class="form-group">
-                <h4>Dirección</h4>
-                <input placeholder="Dirección" name="addressUser" type="text" class="form-control" required="required" [(ngModel)]="userModel.emailUser" id="title">
-            </div>
-            <div class="form-group">
-                <h4>Télefono</h4>
-                <input placeholder="Numero de teléfono" name="phoneUser" type="tel" class="form-control" required="required" [(ngModel)]="userModel.emailUser" id="title">
-            </div>
-        </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="registrar()">Publicar</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="limpiar()">Cerrar</button>
-        </div>
+
+<div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Editing User...</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form enctype="multipart/form-data">
+        <div class="form-group">
+          <h6>Branch</h6>
+          <input placeholder="id branch" name="idPlace" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.idPlace" >
+        <h6>Name</h6>
+        <input placeholder="Name" name="nameUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.nameUser" >
+        <h6>LastName</h6>
+        <input placeholder="lastName" name="lastnameUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.lastnameUser" >
+        <h6>Usuario</h6>
+        <input placeholder="Nick" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.nickUser" >
+        <h6>Email</h6>
+        <input placeholder="Email" name="emailUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.emailUser">
+        <h6>password</h6>
+        <input placeholder="Password" name="passwordUser" type="password" class="form-control" required="required" [(ngModel)]="updateUserModel.passwordUser" >
+
+      </div>
+    </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clean()">Cancel</button>
+        <button type="button" class="btn btn-info" (click)="edit()" >Edit</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="modal fade" id="formEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document" style="max-width: 100%;">
-      <div class="modal-content" style="width: 90%; margin: 0 auto;">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Editar Usuario</h5>
-          <button type="button" class="close" (click)="limpiar()" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <form enctype="multipart/form-data">
-                <div class="form-group">
-                    <h4>Usuario</h4>
-                    <input placeholder="Nombre de usuario" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.nickUser" id="title">
-                </div>
-                <div class="form-group">
-                    <h4>Nombre Completo</h4>
-                    <input placeholder="Nombre completo" name="fullNameUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.lastnameUser" id="title">
-                </div>
-                <div class="form-group">
-                    <h4>Correo</h4>
-                    <input placeholder="Correo electrónico" name="emailUser" type="email" class="form-control" required="required" [(ngModel)]="updateUserModel.emailUser" id="title">
-                </div>
-                <div class="form-group">
-                  <h4>Rol</h4>
-                  <select name="rolUser" class="form-control" [(ngModel)]="updateUserModel.rolUser">
-                    <option [value]="'CLIENT'" [selected]="true">Cliente</option>
-                    <option [value]="'ADMIN'">Administrador</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                    <h4>Nueva Contraseña</h4>
-                    <input placeholder="Contraseña" name="passwordUser" type="password" class="form-control" required="required" [(ngModel)]="updateUserModel.passwordUser" id="title">
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="limpiar()">Editar</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="limpiar()">Eliminar</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="limpiar()">Cerrar</button>
-        </div>
+
+<div class="modal fade" id="DeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Deleting User...</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form enctype="multipart/form-data">
+        <div class="form-group">
+          <h6>Branch</h6>
+          <input placeholder="id branch"  disabled=""  name="idPlace" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.idPlace" >
+        <h6>Name</h6>
+        <input placeholder="Name"  disabled=""  name="nameUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.nameUser" >
+        <h6>LastName</h6>
+        <input placeholder="lastName"  disabled="" name="lastnameUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.lastnameUser" >
+        <h6>Usuario</h6>
+        <input placeholder="Nick"  disabled="" name="nickUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.nickUser" >
+        <h6>Email</h6>
+        <input placeholder="Email" disabled="" name="emailUser" type="text" class="form-control" required="required" [(ngModel)]="updateUserModel.emailUser" >
+        <h6>password</h6>
+        <input placeholder="Password"  disabled="" name="passwordUser" type="password" class="form-control" required="required" [(ngModel)]="updateUserModel.passwordUser" >
+
+      </div>
+    </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clean()">Cancel</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="deleter()" >Delete</button>
       </div>
     </div>
   </div>
-
 </div>

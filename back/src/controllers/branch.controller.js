@@ -30,6 +30,7 @@ function register(req, res){
     params.idCompany?schema.idCompany = params.idCompany:null;
     schema.sale = 0;
     params.sale?schema.sale = params.sale:null;
+    datatoken && datatoken.rolUser== "company"?schema.idCompany = datatoken.idPlace:null;
     
     console.log(schema)
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
@@ -37,13 +38,13 @@ function register(req, res){
             params.idBranch &&
             params.nameBranch &&
             params.addressBranch &&
-            params.idCompany &&
-            params.idCompany.length == 7 &&
-            params.idBranch.length == 3
+            schema.idCompany &&
+            schema.idCompany.length == 7 &&
+            params.idBranch.length == 5
         ){
             branchModel.findOne({
-                $and:[
-                    {$or:[{idBranch: params.idBranch},{nameBranch: params.nameBranch}]},
+                $or:[
+                    {idBranch: params.idBranch},{nameBranch: params.nameBranch},
                      {idCompany: params.idCompany}
                     ]}).exec((err, branchFound)=>{
                 if(err){
@@ -69,6 +70,7 @@ function register(req, res){
                                 res.status(jsonResponse.error).send(jsonResponse);
                                 statusClean();
                             }else{
+                                jsonResponse.error = 200;
                                 jsonResponse.message = "sucursal registrado!!";
                                 jsonResponse.data = {branchSaved};
 
@@ -108,7 +110,7 @@ function list(req, res){
 
     var schema = {}
     datatoken && datatoken.rolUser== "admin"?params.idCompany?schema.idCompany = params.idCompany:null:null;
-    datatoken && datatoken.rolUser== "company"?schema.idCompany = datatoken.idCompany:null;
+    datatoken && datatoken.rolUser== "company"?schema.idCompany = datatoken.idPlace:null;
     
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
         branchModel.find({idCompany: schema.idCompany}).exec((err, branchesFound)=>{

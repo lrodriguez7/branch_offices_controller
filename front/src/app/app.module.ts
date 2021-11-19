@@ -14,6 +14,7 @@ import { NavCompanyComponent } from './components/navbar/nav-company/nav-company
 import { AboutComponent } from './components/start/about/about.component';
 import { UsersComponent } from './components/users/company/users/users.component';
 import { BranchComponent } from './components/users/company/branch/branch.component';
+import { ProductsComponent } from './components/users/company/products/products.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { BranchComponent } from './components/users/company/branch/branch.compon
     NavCompanyComponent,
     AboutComponent,
     UsersComponent,
-    BranchComponent
+    BranchComponent,
+    ProductsComponent
   ],
   imports: [
     BrowserModule,

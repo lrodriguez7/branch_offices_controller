@@ -52,7 +52,7 @@ function register(req, res){
                 productModel.findOne({
                     $and:[
                         {$or:[{nameProvedor: params.nameProvedor},{nameProduct: params.nameProduct}]},
-                         {idCompany: params.idCompany}
+                         {idCompany: schema.idCompany}
                         ]}).exec((err, productFound)=>{
                     if(err){
                         jsonResponse.message = "Error al comprobar el producto";
@@ -78,6 +78,7 @@ function register(req, res){
                                     res.status(jsonResponse.error).send(jsonResponse);
                                     statusClean();
                                 }else{
+                                    jsonResponse.error = 200;
                                     jsonResponse.message = "producto registrado!!";
                                     jsonResponse.data = {productSaved};
     
@@ -117,7 +118,7 @@ function list(req, res){
     var schema = {};
 
     datatoken && datatoken.rolUser == "admin"?params.idCompany?schema.idCompany = params.idCompany:null:null;
-    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idCompany:null;
+    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idPlace:null;
     console.log(schema)
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
         productModel.find({$and:[{idCompany: schema.idCompany},{idDestiny: schema.idCompany}]}).exec((err, productFound)=>{
@@ -165,7 +166,7 @@ function edit(req, res){
     
     console.log(schema)
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
-        if(params.stock){
+        if(schema.stock){
             productModel.findById(idProduct,(err,productFound)=>{
                 if(err){
                     jsonResponse.message = "error al editar producto";
