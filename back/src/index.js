@@ -12,7 +12,7 @@ mongoose.connect("mongodb+srv://lrodriguez:q1w2e3r4@branchofficecontroller.cjvld
     .then(()=>{
         initApp();
         console.log("servidor 3000: activo");
-        app.listen(3000, null);
+        app.listen(process.env.PORT || 3000, null);
 
     }).catch(err =>{
 
