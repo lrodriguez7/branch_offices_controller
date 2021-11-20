@@ -10,5 +10,7 @@ api.post("/branch/register", token.ensureAuth, controller.register);
 api.get("/branch/search/:idBranch",token.ensureAuth, controller.search);
 api.put("/branch/edit/:idBranch",token.ensureAuth, controller.edit);
 api.delete("/branch/delete/:idBranch",token.ensureAuth, controller.remove);
+api.post("/branches/pdf", token.ensureAuth, controller.genPdf);
+api.get("/branches/pdf/:idPdf", controller.getPdf);
 
 module.exports = api;

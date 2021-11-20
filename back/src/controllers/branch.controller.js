@@ -1,5 +1,7 @@
 
+const htmlPdf= require("html-pdf");
 const branchModel = require("../models/branch.model");
+
 
 
 
@@ -270,8 +272,97 @@ function remove(req, res){
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
+function genPdf(req, res){
+    writePdf(req, res);
+  }
 
 
+
+function writePdf(req, res){
+    statusClean();
+    
+    var params = req.body;
+    var datatoken = req.user;
+
+    var schema = {}
+    datatoken && datatoken.rolUser== "admin"?params.idCompany?schema.idCompany = params.idCompany:null:null;
+    datatoken && datatoken.rolUser== "company"?schema.idCompany = datatoken.idPlace:null;
+    console.log(schema)
+    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
+        branchModel.find({idCompany: schema.idCompany}).exec((err, branchesFound)=>{
+            if(err){
+                jsonResponse.message = "error al listar las sucursales";
+            }else{
+                if(branchesFound && branchesFound.length > 0){
+                    var contentPDF =
+                        `<!DOCTYPE html>
+                        <html>
+                        <head>
+                          <style>*{font-family: arial;} table{width: 100%; border-collapse: collapse;} td{width: 10%;} .scoreData{background-color: black; color: white; font-weight: bolder;}</style>
+                        </head>
+                        <body>
+                        <h3>Branch</h3>
+                        <table>
+                          <tr>
+                            <td class='scoreData'>_id</td>
+                            <td class='scoreData'>Identificador</td>
+                            <td class='scoreData'>Compania</td>
+                            <td class='scoreData'>Name</td>
+                            <td class='scoreData'>Address</td>
+                            <td class='scoreData'>Sale</td>
+                          </tr>`;
+                          branchesFound.forEach(dato => {
+                          contentPDF += `<tr>
+                            <td>` + dato._id + `</td>
+                            <td>` + dato.idCompany + `</td>
+                            <td>` + dato.idBranch + `</td>
+                            <td>` + dato.nameBranch + `</td>
+                            <td>` + dato.addressBranch + `</td>
+                            <td>` + dato.sale + `</td>
+                          </tr>`;
+                        });
+            
+                      contentPDF += `</table>
+                    </body>
+                    </html>`;
+  
+                    htmlPdf
+                    .create(contentPDF)
+                    .toFile(
+                      "../pdf/branch/" + datatoken._id + ".pdf",
+                      (err, response) => {
+                        if (err) {
+                          res.status(500).send({
+                            message:"Error al crear el pdf"
+                          });
+                        } else {
+                          console.log(__dirname);
+                          res.status(200).send({ url: "http://localhost:3000/api/branches/pdf/" + datatoken._id});
+                        }
+                      }
+                    );
+                }else{
+                    jsonResponse.error = 404;
+                    jsonResponse.message = "no se encontraron las sucursales";
+                    res.status(jsonResponse.error).send(jsonResponse);
+                    statusClean();
+                }
+            }
+        });
+    }else{
+        jsonResponse.error = 403;
+        jsonResponse.message = "No tienes acceso";
+
+        res.status(jsonResponse.error).send(jsonResponse);
+        statusClean();
+    }
+    statusClean();
+    
+  }
+  
+  function getPdf(req, res){
+    res.download(__dirname + "../../../pdf/branch/" + req.params.idPdf + ".pdf");
+  }
 
 //=====================================================================================================\\
 //                                         Reusable functions 
@@ -295,5 +386,7 @@ module.exports = {
     list,
     search,
     edit,
-    remove
+    remove,
+    getPdf,
+    genPdf
 }
