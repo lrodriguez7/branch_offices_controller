@@ -15,6 +15,8 @@ import { AboutComponent } from './components/start/about/about.component';
 import { UsersComponent } from './components/users/company/users/users.component';
 import { BranchComponent } from './components/users/company/branch/branch.component';
 import { ProductsComponent } from './components/users/company/products/products.component';
+import { ProductsBranchComponent } from './components/users/branch/products-branch/products-branch.component';
+import { NavBranchComponent } from './components/navbar/nav-branch/nav-branch.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { ProductsComponent } from './components/users/company/products/products.
     AboutComponent,
     UsersComponent,
     BranchComponent,
-    ProductsComponent
+    ProductsComponent,
+    ProductsBranchComponent,
+    NavBranchComponent
   ],
   imports: [
     BrowserModule,

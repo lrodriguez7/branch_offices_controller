@@ -143,4 +143,5 @@ export class BranchComponent implements OnInit {
     this.updateBranchModel = new Branch("","","","","",0);
   }
 
+
 }

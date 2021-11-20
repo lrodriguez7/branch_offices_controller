@@ -24,7 +24,7 @@ export class AboutComponent implements OnInit {
 
   ngOnInit(): void {
     if(localStorage.getItem("token")){
-      this._router.navigate(['/home'])
+      this._router.navigate(['/about'])
     }
   }
 

@@ -11,8 +11,9 @@ api.post("/product/register", token.ensureAuth, controller.register);
 api.put("/product/edit/:idProduct",token.ensureAuth, controller.edit);
 api.delete("/product/delete/:idProduct",token.ensureAuth, controller.remove);
 //branch product
+api.get("/product/tables", token.ensureAuth, controller.tables);
 api.post("/product/add", token.ensureAuth, controller.add);
-api.get("/product/tables", token.ensureAuth, controller.table);
+api.post("/product/tables", token.ensureAuth, controller.table);
 api.put("/product/change/:idProduct", token.ensureAuth, controller.change);
 api.delete("/product/deleter/:idProduct", token.ensureAuth, controller.deleter);
 //branch sales

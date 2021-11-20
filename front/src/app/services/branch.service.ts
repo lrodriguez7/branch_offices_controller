@@ -28,6 +28,11 @@ export class BranchService {
     let headersToken = this.headersVar.set('Authorization', this.token)
     return this.http.get(this.rute + '/branches', { headers: headersToken })
   }
+  search(id: String): Observable<any> {
+    this.token = localStorage.getItem('token')
+    let headersToken = this.headersVar.set('Authorization', this.token)
+    return this.http.get(this.rute + '/branch/search/' + id, { headers: headersToken })
+  }
 
   register(branch: Branch): Observable<any> {
     let params = JSON.stringify(branch);

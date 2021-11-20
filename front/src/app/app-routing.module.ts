@@ -8,6 +8,7 @@ import { AboutComponent } from './components/start/about/about.component';
 import { UsersComponent } from './components/users/company/users/users.component';
 import { BranchComponent } from './components/users/company/branch/branch.component';
 import { ProductsComponent } from './components/users/company/products/products.component';
+import { ProductsBranchComponent } from './components/users/branch/products-branch/products-branch.component';
 
 const routes: Routes = [
 
@@ -19,6 +20,8 @@ const routes: Routes = [
   {path: 'user', component: UsersComponent},
   {path: 'branch', component: BranchComponent},
   {path: 'product', component: ProductsComponent},
+  {path: 'product-branch', component: ProductsBranchComponent},
+  {path: 'product-branch/:idBranch', component: ProductsBranchComponent},
 
 
 ];

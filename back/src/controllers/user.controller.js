@@ -268,7 +268,7 @@ function search(req, res){
 
     var datatoken = req.user;
     
-    if(datatoken.rolUser == "admin"){
+    if(datatoken.rolUser == "admin"|| datatoken.rolUser == "company"){
         userModel.findOne({$and:[{_id: _id},
             {$or:[{rolUser: "company"},{rolUser: "branch"}]}]}).exec((err, userFound)=>{
             if(err){

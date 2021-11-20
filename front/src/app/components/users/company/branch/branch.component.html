@@ -12,7 +12,7 @@
         <th scope="col">NAME</th>
         <th scope="col">ADDRESS</th>
         <th scope="col">SALE</th>
-        <th scope="col">EDIT / REMOVE</th>
+        <th scope="col">PRODUCTS / EDIT / REMOVE</th>
 
       </tr>
     </thead>
@@ -25,7 +25,7 @@
       <td>{{dt.addressBranch}}</td>
       <td>{{dt.sale}}</td>
       <td>
-        <button type="button" class="btn btn-info  " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)">Products</button>
+        <button type="button" class="btn btn-info  " routerLink="/product-branch/{{dt._id}}" (click)="get(dt._id)">Products</button>
         <button type="button" class="btn btn-info mx-2 " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)">Edit</button>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal" (click)="get(dt._id)">Remove</button>
 
@@ -60,6 +60,7 @@
       </div>
     </div>
   </div>
+
 
 
   <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

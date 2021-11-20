@@ -44,14 +44,12 @@ function register(req, res){
     
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
         if(
-            schema.idCompany &&
             params.nameProduct &&
-            params.nameProvedor &&
-            params.stock
+            params.nameProvedor
             ){
                 productModel.findOne({
                     $and:[
-                        {$or:[{nameProvedor: params.nameProvedor},{nameProduct: params.nameProduct}]},
+                        {$and:[{nameProvedor: params.nameProvedor},{nameProduct: params.nameProduct}]},
                          {idCompany: schema.idCompany}
                         ]}).exec((err, productFound)=>{
                     if(err){
@@ -298,132 +296,148 @@ function add(req,res){
     
     datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idPlace:null;
 
+    console.log(schema)
     if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
         if(
             schema.idCompany &&
-            params.nameProduct &&
-            params.nameProvedor &&
-            params.stock &&
-            params.stock.length > 0 &&
-            params.idDestiny
+            schema.nameProduct &&
+            schema.nameProvedor &&
+            schema.stock &&
+            schema.idDestiny
             ){
-                productModel.findOne({$and:[
-                    {idCompany:schema.idCompany},
-                    {nameProduct:params.nameProduct},
-                    {nameProvedor:params.nameProvedor},
-                    {idDestiny:schema.idCompany},
-                ]}).exec((err, productFound)=>{
+                branchModel.findOne({idBranch: schema.idDestiny},(err,branchFound)=>{
                     if(err){
                         jsonResponse.message = "Error al registrar producto";
-                                    
+                                                
                         res.status(jsonResponse.error).send(jsonResponse);
                         statusClean();
                     }else{
-                        if(productFound){
-                            if(productFound.stock >= schema.stock){
-                                
-                                schema2.stock = productFound.stock - schema.stock
-                                productModel.findOneAndUpdate({$and:[
-                                    {idCompany: schema.idCompany},
-                                    {nameProduct: params.nameProduct},
-                                    {nameProvedor: params.nameProvedor},
-                                ]},schema2,
-                                    {new: true, useFindAndModify: false}, (err, productUpdate)=>{
-                                        if(err){
-                                            jsonResponse.message = "Error al registrar producto";
-                                    
-                                            res.status(jsonResponse.error).send(jsonResponse);
-                                            statusClean();
-                                        }else{
-                                            if(productUpdate){
-                                                productModel.findOne({$and:[
-                                                    {idCompany: schema.idCompany},
-                                                    {nameProduct: schema.nameProduct},
-                                                    {nameProvedor: schema.nameProvedor},
-                                                    {idDestiny: params.idDestiny},
-                                                ]}).exec((err,productFound)=>{
+                        if(branchFound){
+                            productModel.findOne({$and:[
+                                {idCompany:schema.idCompany},
+                                {nameProduct:params.nameProduct},
+                                {nameProvedor:params.nameProvedor},
+                                {idDestiny:schema.idCompany},
+                            ]}).exec((err, productFound)=>{
+                                if(err){
+                                    jsonResponse.message = "Error al registrar producto";
+                                                
+                                    res.status(jsonResponse.error).send(jsonResponse);
+                                    statusClean();
+                                }else{
+                                    if(productFound){
+                                        if(productFound.stock >= schema.stock){
+                                            
+                                            schema2.stock = productFound.stock - schema.stock
+                                            productModel.findOneAndUpdate({$and:[
+                                                {idCompany: schema.idCompany},
+                                                {nameProduct: params.nameProduct},
+                                                {nameProvedor: params.nameProvedor},
+                                            ]},schema2,
+                                                {new: true, useFindAndModify: false}, (err, productUpdate)=>{
                                                     if(err){
                                                         jsonResponse.message = "Error al registrar producto";
-                                    
+                                                
                                                         res.status(jsonResponse.error).send(jsonResponse);
                                                         statusClean();
                                                     }else{
-                                                        if(productFound && productFound.sale >= 0){
-                                                            schema.sale = productFound.sale;
-                                                            productFound.stock = parseInt(productFound.stock)
-                                                            schema.stock = parseInt(schema.stock)
-                                                            schema.stock = productFound.stock + schema.stock
-                                                            console.log(schema)
-                                                            console.log(params.idDestiny)
-                                                            productModel.findOneAndUpdate({$and:[
+                                                        if(productUpdate){
+                                                            productModel.findOne({$and:[
                                                                 {idCompany: schema.idCompany},
                                                                 {nameProduct: schema.nameProduct},
                                                                 {nameProvedor: schema.nameProvedor},
                                                                 {idDestiny: params.idDestiny},
-                                                            ]},schema,
-                                                                {new: true, useFindAndModify: false}, (err, productUpdate)=>{
-                                                                    if(err){
-                                                                        jsonResponse.message = "Error al registrar producto";
-                                    
-                                                                        res.status(jsonResponse.error).send(jsonResponse);
-                                                                        statusClean();
-                                                                    }else{
-                                                                        if(productUpdate){
-                                                                            jsonResponse.error = 200;
-                                                                            jsonResponse.message = "producto actualizado!!"
-                                                                            jsonResponse.data = productUpdate;
-
-                                                                            res.status(jsonResponse.error).send(jsonResponse);
-                                                                            statusClean();
-                                                                        }else{
-                                                                            jsonResponse.error = 404;
-                                                                            jsonResponse.message = "No existe el producto";
-                                                                            res.status(jsonResponse.error).send(jsonResponse);
-                                                                            statusClean();
-                                                                        }
-                                                                    }
-                                                                })
-                                                        }else{
-                                                            registerModel = new productModel(schema)
-
-                                                            registerModel.save((err, productSaved)=>{
+                                                            ]}).exec((err,productFound)=>{
                                                                 if(err){
                                                                     jsonResponse.message = "Error al registrar producto";
-                                    
+                                                
                                                                     res.status(jsonResponse.error).send(jsonResponse);
                                                                     statusClean();
                                                                 }else{
-                                                                    jsonResponse.error = 200;
-                                                                    jsonResponse.message = "producto registrado!!";
-                                                                    jsonResponse.data = {productSaved};
-                                    
-                                                                    res.status(jsonResponse.error).send(jsonResponse);
-                                                                    statusClean();
-                                                                    
-                                                                    
+                                                                    if(productFound && productFound.sale >= 0){
+                                                                        schema.sale = productFound.sale;
+                                                                        productFound.stock = parseInt(productFound.stock)
+                                                                        schema.stock = parseInt(schema.stock)
+                                                                        schema.stock = productFound.stock + schema.stock
+                                                                        console.log(schema)
+                                                                        console.log(params.idDestiny)
+                                                                        productModel.findOneAndUpdate({$and:[
+                                                                            {idCompany: schema.idCompany},
+                                                                            {nameProduct: schema.nameProduct},
+                                                                            {nameProvedor: schema.nameProvedor},
+                                                                            {idDestiny: params.idDestiny},
+                                                                        ]},schema,
+                                                                            {new: true, useFindAndModify: false}, (err, productUpdate)=>{
+                                                                                if(err){
+                                                                                    jsonResponse.message = "Error al registrar producto";
+                                                
+                                                                                    res.status(jsonResponse.error).send(jsonResponse);
+                                                                                    statusClean();
+                                                                                }else{
+                                                                                    if(productUpdate){
+                                                                                        jsonResponse.error = 200;
+                                                                                        jsonResponse.message = "producto actualizado!!"
+                                                                                        jsonResponse.data = productUpdate;
+            
+                                                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                                                        statusClean();
+                                                                                    }else{
+                                                                                        jsonResponse.error = 404;
+                                                                                        jsonResponse.message = "No existe el producto";
+                                                                                        res.status(jsonResponse.error).send(jsonResponse);
+                                                                                        statusClean();
+                                                                                    }
+                                                                                }
+                                                                            })
+                                                                    }else{
+                                                                        registerModel = new productModel(schema)
+            
+                                                                        registerModel.save((err, productSaved)=>{
+                                                                            if(err){
+                                                                                jsonResponse.message = "Error al registrar producto";
+                                                
+                                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                                                statusClean();
+                                                                            }else{
+                                                                                jsonResponse.error = 200;
+                                                                                jsonResponse.message = "producto registrado!!";
+                                                                                jsonResponse.data = {productSaved};
+                                                
+                                                                                res.status(jsonResponse.error).send(jsonResponse);
+                                                                                statusClean();
+                                                                                
+                                                                                
+                                                                            }
+                                                                        })
+                                                                    }
                                                                 }
                                                             })
+                                                        }else{
+                                                            jsonResponse.error = 404;
+                                                            jsonResponse.message = "No existe el producto";
+                                                            res.status(jsonResponse.error).send(jsonResponse);
+                                                            statusClean();
                                                         }
                                                     }
                                                 })
-                                            }else{
-                                                jsonResponse.error = 404;
-                                                jsonResponse.message = "No existe el producto";
-                                                res.status(jsonResponse.error).send(jsonResponse);
-                                                statusClean();
-                                            }
+                                        }else{
+                                            jsonResponse.error = 400;
+                                            jsonResponse.message = "Error, cantidad mayor a la cantidad de bodega";
+                                            res.status(jsonResponse.error).send(jsonResponse);
+                                            statusClean();
                                         }
-                                    })
-                            }else{
-                                jsonResponse.error = 400;
-                                jsonResponse.message = "Error, cantidad mayor a la cantidad de bodega";
-                                res.status(jsonResponse.error).send(jsonResponse);
-                                statusClean();
-                            }
-                            
+                                        
+                                    }else{
+                                        jsonResponse.error = 404;
+                                        jsonResponse.message = "No existe el producto";
+                                        res.status(jsonResponse.error).send(jsonResponse);
+                                        statusClean();
+                                    }
+                                }
+                            })
                         }else{
-                            jsonResponse.error = 404;
-                            jsonResponse.message = "No existe el producto";
+                            jsonResponse.error = 400;
+                            jsonResponse.message = "sucursal no encontrada";
                             res.status(jsonResponse.error).send(jsonResponse);
                             statusClean();
                         }
@@ -457,10 +471,11 @@ function table(req,res){
     var schema = {};
 
     datatoken && datatoken.rolUser == "admin"?params.idCompany?schema.idCompany = params.idCompany:null:null;
-    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idCompany:null;
+    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idPlace:null;
+    datatoken && datatoken.rolUser == "branch"?schema.idDestiny = datatoken.idPlace:null;
     params.idDestiny?schema.idDestiny = params.idDestiny:null;
     console.log(schema)
-    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company"){
+    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company" || datatoken.rolUser == "branch"){
         if(params.idDestiny){
             productModel.find({$and:[{idCompany: schema.idCompany},{idDestiny: schema.idDestiny}]}).exec((err, productFound)=>{
                 if(err){
@@ -481,11 +496,36 @@ function table(req,res){
         statusClean();
     
         }else{
-            jsonResponse.error = 403;
-            jsonResponse.message = "Error, especificar el sucursal del producto a mostrar";
+            if(datatoken.rolUser == "branch"){
+                productModel.find({idDestiny:schema.idDestiny},(err,productFound)=>{
+                    if(err){
 
-            res.status(jsonResponse.error).send(jsonResponse);
-            statusClean();
+                    }else{
+                        if(productFound){
+                            console.log(schema.idDestiny)
+                            jsonResponse.error = 200;
+                            jsonResponse.message = "producto encontrado!!";
+                            jsonResponse.data = productFound;
+
+                            res.status(jsonResponse.error).send(jsonResponse);
+                            statusClean();
+                        }else{
+                            jsonResponse.error = 404;
+                            jsonResponse.message = "Error, no se encontro los productos";
+
+                            res.status(jsonResponse.error).send(jsonResponse);
+                            statusClean();
+                        }
+                    }
+                })
+            }else{
+                jsonResponse.error = 400;
+                jsonResponse.message = "Error, especificar el sucursal del producto a mostrar"
+
+                res.status(jsonResponse.error).send(jsonResponse);
+                statusClean();
+            }
+            
         }
     }else{
         jsonResponse.error = 403;
@@ -497,6 +537,83 @@ function table(req,res){
         
 }
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
+
+function tables(req,res){
+
+    statusClean();
+    var params = req.body;
+    var datatoken = req.user;
+    
+    var schema = {};
+
+    datatoken && datatoken.rolUser == "admin"?params.idCompany?schema.idCompany = params.idCompany:null:null;
+    datatoken && datatoken.rolUser == "company"?schema.idCompany = datatoken.idPlace:null;
+    datatoken && datatoken.rolUser == "branch"?schema.idDestiny = datatoken.idPlace:null;
+    params.idDestiny?schema.idDestiny = params.idDestiny:null;
+    console.log(schema)
+    if(datatoken.rolUser == "admin" || datatoken.rolUser == "company" || datatoken.rolUser == "branch"){
+        if(params.idDestiny){
+            productModel.find({$and:[{idCompany: schema.idCompany},{idDestiny: schema.idDestiny}]}).exec((err, productFound)=>{
+                if(err){
+                    jsonResponse.message = "error al listar los productos";
+                }else{
+                    if(productFound && productFound.length > 0){
+                        jsonResponse.error = 200;
+                        jsonResponse.message = "productos obtenidos";
+                        jsonResponse.data = productFound;
+                    }else{
+                        jsonResponse.error = 404;
+                        jsonResponse.message = "no se encontraron los productos";
+                    }
+                }
+                res.status(jsonResponse.error).send(jsonResponse);
+                statusClean();
+            });
+        statusClean();
+    
+        }else{
+            if(datatoken.rolUser == "branch"){
+                productModel.find({idDestiny:schema.idDestiny},(err,productFound)=>{
+                    if(err){
+
+                    }else{
+                        if(productFound){
+                            console.log(schema.idDestiny)
+                            jsonResponse.error = 200;
+                            jsonResponse.message = "producto encontrado!!";
+                            jsonResponse.data = productFound;
+
+                            res.status(jsonResponse.error).send(jsonResponse);
+                            statusClean();
+                        }else{
+                            jsonResponse.error = 404;
+                            jsonResponse.message = "Error, no se encontro los productos";
+
+                            res.status(jsonResponse.error).send(jsonResponse);
+                            statusClean();
+                        }
+                    }
+                })
+            }else{
+                jsonResponse.error = 400;
+                jsonResponse.message = "Error, especificar el sucursal del producto a mostrar"
+
+                res.status(jsonResponse.error).send(jsonResponse);
+                statusClean();
+            }
+            
+        }
+    }else{
+        jsonResponse.error = 403;
+        jsonResponse.message = "No tienes acceso";
+
+        res.status(jsonResponse.error).send(jsonResponse);
+        statusClean();
+    }
+        
+}
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\\
 
 function changes(req,res){
@@ -1035,7 +1152,7 @@ function sale(req,res){
                                                                                 }else{
                                                                                     if(companyUpdate){
                                                                                         branchModel.findOne({$and:[
-                                                                                            {idPlace: productFound.idDestiny},
+                                                                                            {idBranch: productFound.idDestiny},
                                                                                         ]},(err,branchFound)=>{
                                                                                             if(err){
                                                                                                 jsonResponse.message = "No se pudo registrar el producto"
@@ -1218,6 +1335,7 @@ module.exports = {
     remove,
     add,
     table,
+    tables,
     change,
     deleter,
     sale,

@@ -1,7 +1,8 @@
-<app-nav-company></app-nav-company>
+<app-nav-branch *ngIf="user.rolUser == 'branch'"></app-nav-branch>
+<app-nav-company *ngIf="user.rolUser == 'company'"></app-nav-company>
 <div class="container p-3">
   <div class="menuBt">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#RegisterModal">Create Product</button>
+    <button type="button" class="btn btn-primary" *ngIf="user.rolUser == 'company'" data-bs-toggle="modal" data-bs-target="#RegisterModal" (click)="ngOnInit()">Create Product</button>
   </div>
   <table class="table table-hover">
     <thead>
@@ -12,7 +13,8 @@
         <th scope="col">PROVIDER</th>
         <th scope="col">STOCK</th>
         <th scope="col">SALE</th>
-        <th scope="col">SEND / EDIT / REMOVE</th>
+        <th scope="col" *ngIf="user.rolUser == 'branch'">SEND</th>
+        <th scope="col" *ngIf="user.rolUser == 'company'">SEND/ EDIT / REMOVE</th>
 
       </tr>
     </thead>
@@ -25,9 +27,9 @@
       <td>{{dt.stock}}</td>
       <td>{{dt.sale}}</td>
       <td>
-        <button type="button" class="btn btn-info  " data-bs-toggle="modal" data-bs-target="#AddModal" (click)="get(dt._id)">Send</button>
-        <button type="button" class="btn btn-info mx-2 " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)">Edit</button>
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal" (click)="get(dt._id)">Remove</button>
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#SaleModal" (click)="get(dt._id)">Sale</button>
+        <button type="button" class="btn btn-info mx-2 " data-bs-toggle="modal" data-bs-target="#EditModal" (click)="get(dt._id)" *ngIf="user.rolUser == 'company'">Edit</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal" (click)="get(dt._id)"*ngIf="user.rolUser == 'company'">Remove</button>
 
 
     </tr>
@@ -46,6 +48,10 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
+            <h6>idCompany</h6>
+          <input placeholder="idCompany" disabled="" name="idCompany" type="text" class="form-control" required="required" [(ngModel)]="productModel.idCompany" >
+            <h6>idDestiny</h6>
+          <input placeholder="idDestiny" disabled="" name="idDestiny" type="text" class="form-control" required="required" [(ngModel)]="productModel.idDestiny" >
           <h6>Product</h6>
           <input placeholder="Name" name="nameProduct" type="text" class="form-control" required="required" [(ngModel)]="productModel.nameProduct" >
           <h6>Provider</h6>
@@ -62,33 +68,6 @@
     </div>
   </div>
 
-  <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Sending Product...</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-          <h6>Product</h6>
-          <input placeholder="Name" name="nameProduct" type="text" class="form-control" required="required" [(ngModel)]="productModel.nameProduct" >
-          <h6>Provider</h6>
-          <input placeholder="Provider" name="nameProvider" type="text" class="form-control" required="required" [(ngModel)]="productModel.nameProvedor" >
-          <h6>Stock</h6>
-          <input placeholder="stock" name="stock" type="number" class="form-control" required="required" [(ngModel)]="productModel.stock" >
-          <h6>Branch</h6>
-          <input placeholder="idDestiny" name="idDestiny" type="String" class="form-control" required="required" [(ngModel)]="productModel.idDestiny" >
-      </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clean()">Cancel</button>
-          <button type="button" class="btn btn-success"  (click)="add()" >Send</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -98,6 +77,7 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
+
           <h6>Product</h6>
           <input placeholder="Name" disabled="" name="nameProduct" type="text" class="form-control" required="required" [(ngModel)]="updateProductModel.nameProduct" >
           <h6>Provider</h6>
@@ -139,6 +119,30 @@
     </div>
   </div>
 
+  <div class="modal fade" id="SaleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Saling Product...</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="clean()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <h6>idDestiny</h6>
+          <input placeholder="idDestiny" disabled="" name="idDestiny" type="text" class="form-control" required="required" [(ngModel)]="updateProductModel.idDestiny" >
+          <h6>Stock</h6>
+          <input placeholder="stock" disabled="" name="stock" type="number" class="form-control" required="required" [(ngModel)]="updateProductModel.stock" >
+          <h6>Sale</h6>
+          <input placeholder="sale" name="sale" type="number" class="form-control" required="required" [(ngModel)]="updateProductModel.sale" >
+      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clean()">Cancel</button>
+          <button type="button" class="btn btn-success"  (click)="sale()" >Sale</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+</div>
 
-</div>>
