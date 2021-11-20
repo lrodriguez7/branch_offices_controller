@@ -60,4 +60,9 @@ export class BranchService {
     return this.http.delete(this.rute + '/branch/delete/' + id, { headers: headersToken })
   }
 
+  genPdf(){
+    this.token = localStorage.getItem('token')
+    let headersToken = this.headersVar.set('Authorization', this.token)
+    return this.http.post(this.rute + '/branches/pdf', {}, { headers: headersToken })
+  }
 }

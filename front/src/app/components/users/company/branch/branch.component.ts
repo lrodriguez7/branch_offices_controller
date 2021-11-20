@@ -136,6 +136,29 @@ export class BranchComponent implements OnInit {
     });
   }
 
+  generatePdf(){
+    this.branchService.genPdf().subscribe(response=>{
+      console.log(response);
+      var url: any = response;
+      window.location.href = url.url;
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'PDF descargado',
+        showConfirmButton: false,
+        timer: 1500
+      })
+    }, err=>{
+      Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: err.error.message,
+        showConfirmButton: false,
+        timer: 1500
+      })
+    })
+  }
+
 
   clean(){
 
