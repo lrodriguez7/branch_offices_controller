@@ -1,8 +1,8 @@
-const app = require("./app");
+const app = require("./src/app");
 const mongoose = require("mongoose");
-const userModel = require("./models/user.model");
-const companyModel = require("./models/company.model");
-const branchModel = require("./models/branch.model");
+const userModel = require("./src/models/user.model");
+const companyModel = require("./src/models/company.model");
+const branchModel = require("./src/models/branch.model");
 const bcrypt = require("bcrypt-nodejs");
 
 mongoose.Promise = global.Promise;

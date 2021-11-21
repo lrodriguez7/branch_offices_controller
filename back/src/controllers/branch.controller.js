@@ -337,7 +337,7 @@ function writePdf(req, res){
                           });
                         } else {
                           console.log(__dirname);
-                          res.status(200).send({ url: "http://localhost:3000/api/branches/pdf/" + datatoken._id});
+                          res.status(200).send({ url: "https://branch-nodejs.herokuapp.com/api/branches/pdf/" + datatoken._id});
                         }
                       }
                     );
